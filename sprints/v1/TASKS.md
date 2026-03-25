@@ -24,9 +24,10 @@
   - Files: `components/ProcessingView.tsx`, `lib/statusMessages.ts`
   - Completed: 2026-03-25 — ProcessingView component with spinning border animation, fade-in/out message transitions, progress bar, step counter. statusMessages.ts exports all 7 sequential status messages. 9/9 unit tests + 3/3 E2E tests pass.
 
-- [ ] Task 5: Implement PDF text extraction API route (P0)
+- [x] Task 5: Implement PDF text extraction API route (P0)
   - Acceptance: `POST /api/extract` accepts a multipart form upload of a PDF file; uses `pdf-parse` to extract full text; returns `{ text: string, pageCount: number }`; handles errors (non-PDF, empty file, oversized file >20MB) with clear error messages
   - Files: `app/api/extract/route.ts`
+  - Completed: 2026-03-25 — POST /api/extract handles multipart form upload, validates MIME type and extension, enforces 20MB limit, uses pdf-parse (dynamic import for server-side only). Returns { text, pageCount }. Handles non-PDF, empty file, oversized file with clear error messages. 8/8 integration tests pass.
 
 - [ ] Task 6: Implement the OpenAI notebook generation API route (P0)
   - Acceptance: `POST /api/generate` accepts `{ paperText: string, apiKey: string }`; calls Groq `llama-3.3-70b-versatile` with a carefully engineered system prompt that instructs the model to return a structured JSON representing notebook cells (type: `markdown` or `code`, source: string[]); prompt enforces the 7-section notebook structure defined in the PRD; synthetic data must be realistic and domain-appropriate; returns raw notebook cell array
