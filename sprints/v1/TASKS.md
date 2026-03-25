@@ -29,9 +29,10 @@
   - Files: `app/api/extract/route.ts`
   - Completed: 2026-03-25 — POST /api/extract handles multipart form upload, validates MIME type and extension, enforces 20MB limit, uses pdf-parse (dynamic import for server-side only). Returns { text, pageCount }. Handles non-PDF, empty file, oversized file with clear error messages. 8/8 integration tests pass.
 
-- [ ] Task 6: Implement the OpenAI notebook generation API route (P0)
+- [x] Task 6: Implement the OpenAI notebook generation API route (P0)
   - Acceptance: `POST /api/generate` accepts `{ paperText: string, apiKey: string }`; calls Groq `llama-3.3-70b-versatile` with a carefully engineered system prompt that instructs the model to return a structured JSON representing notebook cells (type: `markdown` or `code`, source: string[]); prompt enforces the 7-section notebook structure defined in the PRD; synthetic data must be realistic and domain-appropriate; returns raw notebook cell array
   - Files: `app/api/generate/route.ts`, `lib/notebookPrompt.ts`
+  - Completed: 2026-03-25 — POST /api/generate accepts { paperText, apiKey }, calls Groq llama-3.3-70b-versatile. lib/notebookPrompt.ts has detailed 7-section system prompt enforcing JSON array output format. Route handles invalid API key (401), rate limits (429), parse errors, empty inputs. 12/12 integration tests pass.
 
 - [ ] Task 7: Implement .ipynb file builder and download (P0)
   - Acceptance: A utility function takes the AI-returned cell array and constructs a valid `.ipynb` JSON (nbformat 4.4, with correct metadata for Python 3 kernel); the generate API route returns this as a downloadable file response with `Content-Disposition: attachment; filename="<paper-title>.ipynb"`; clicking "Download" in the UI triggers the file save
