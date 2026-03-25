@@ -36,3 +36,34 @@ pre,
 .font-mono {
   font-family: 'JetBrains Mono', Menlo, monospace;
 }
+
+/* Smooth scrollbar on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+/* Custom scrollbar on WebKit */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+/* Focus ring consistent across browsers */
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Remove default focus ring; we use focus-visible */
+:focus:not(:focus-visible) {
+  outline: none;
+}

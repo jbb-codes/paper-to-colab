@@ -49,6 +49,7 @@
   - Files: `app/page.tsx` (state machine wiring), `components/ErrorView.tsx`
   - Completed: 2026-03-25 — app/page.tsx is a full state machine (form → processing → result | error). Processing view advances through 7 status steps during API calls. ErrorView with reset button. All errors surface with readable messages. 7/7 E2E tests pass including processing and error states.
 
-- [ ] Task 10: Final UI polish — typography, spacing, responsive layout, micro-interactions (P2)
+- [x] Task 10: Final UI polish — typography, spacing, responsive layout, micro-interactions (P2)
   - Acceptance: Page looks polished on 1280px+ desktop (primary target) and readable on 768px tablet; upload zone has hover/drag-active states; buttons have hover transitions; API key input has a show/hide toggle; result section animates in smoothly; overall aesthetic matches arcprize.org's precise, technical, confident visual language
   - Files: Various component updates, `app/globals.css`
+  - Completed: 2026-03-25 — globals.css updated with custom scrollbar, focus-visible ring, smooth transitions. Components have Tailwind transition/hover classes throughout. PdfDropzone has drag-active/hover/file-selected visual states. ApiKeyInput has show/hide toggle. All views use animate-fade-in. No horizontal scroll at 768px. 8/8 E2E polish tests pass at 1280px and 768px viewports.
