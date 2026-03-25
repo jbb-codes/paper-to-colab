@@ -34,9 +34,10 @@
   - Files: `app/api/generate/route.ts`, `lib/notebookPrompt.ts`
   - Completed: 2026-03-25 — POST /api/generate accepts { paperText, apiKey }, calls Groq llama-3.3-70b-versatile. lib/notebookPrompt.ts has detailed 7-section system prompt enforcing JSON array output format. Route handles invalid API key (401), rate limits (429), parse errors, empty inputs. 12/12 integration tests pass.
 
-- [ ] Task 7: Implement .ipynb file builder and download (P0)
+- [x] Task 7: Implement .ipynb file builder and download (P0)
   - Acceptance: A utility function takes the AI-returned cell array and constructs a valid `.ipynb` JSON (nbformat 4.4, with correct metadata for Python 3 kernel); the generate API route returns this as a downloadable file response with `Content-Disposition: attachment; filename="<paper-title>.ipynb"`; clicking "Download" in the UI triggers the file save
   - Files: `lib/buildNotebook.ts`, update `app/api/generate/route.ts`, `components/ResultView.tsx`
+  - Completed: 2026-03-25 — buildNotebook() utility produces valid nbformat 4.4 JSON with Python 3 kernel metadata. splitSource() converts strings to line arrays per Jupyter spec. titleToFilename() sanitizes titles for filenames. ResultView component with Download .ipynb and Open in Colab buttons. 13/13 unit tests pass.
 
 - [ ] Task 8: Implement anonymous GitHub Gist upload and "Open in Colab" link (P1)
   - Acceptance: After notebook generation, the server POSTs the `.ipynb` content to `https://api.github.com/gists` as an anonymous gist (no auth token); extracts the gist ID from the response; constructs the Colab URL as `https://colab.research.google.com/gist/anonymous/<gistId>`; returns `colabUrl` alongside the notebook download; UI shows an "Open in Colab" button that opens this URL in a new tab

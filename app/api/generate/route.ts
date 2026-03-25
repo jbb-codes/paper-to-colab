@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { SYSTEM_PROMPT, buildUserPrompt } from "@/lib/notebookPrompt";
+import { buildNotebook, titleToFilename } from "@/lib/buildNotebook";
 
 export interface NotebookCell {
   type: "markdown" | "code";
   source: string;
+}
+
+function extractTitle(cells: NotebookCell[]): string {
+  // Try to pull title from the first markdown cell's first H1
+  const firstMarkdown = cells.find((c) => c.type === "markdown");
+  if (firstMarkdown) {
+    const match = firstMarkdown.source.match(/^#\s+(.+)/m);
+    if (match) return match[1].trim();
+  }
+  return "research-paper-notebook";
 }
 
 export async function POST(req: NextRequest) {
@@ -66,19 +77,18 @@ export async function POST(req: NextRequest) {
       }
 
       // Validate each cell
-      cells = cells
-        .filter(
-          (cell): cell is NotebookCell =>
-            typeof cell === "object" &&
-            cell !== null &&
-            (cell.type === "markdown" || cell.type === "code") &&
-            typeof cell.source === "string"
-        );
+      cells = cells.filter(
+        (cell): cell is NotebookCell =>
+          typeof cell === "object" &&
+          cell !== null &&
+          (cell.type === "markdown" || cell.type === "code") &&
+          typeof cell.source === "string"
+      );
 
       if (cells.length === 0) {
         throw new Error("No valid cells found in response");
       }
-    } catch (parseErr) {
+    } catch {
       return NextResponse.json(
         {
           error: `Failed to parse notebook cells from AI response. The model may have returned an invalid format. Please try again.`,
@@ -88,7 +98,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ cells });
+    // Build the .ipynb notebook
+    const title = extractTitle(cells);
+    const notebook = buildNotebook(cells, title);
+    const notebookJson = JSON.stringify(notebook, null, 2);
+    const filename = `${titleToFilename(title)}.ipynb`;
+
+    return NextResponse.json({
+      cells,
+      notebookJson,
+      filename,
+      title,
+    });
   } catch (err: unknown) {
     if (err instanceof Groq.APIError) {
       const status = err.status ?? 500;
