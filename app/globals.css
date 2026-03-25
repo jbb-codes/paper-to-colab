@@ -4,19 +4,19 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* Dark theme (default) */
+/* Dark theme — Tokyo Night */
 :root,
 [data-theme="dark"] {
-  --background: #080808;
-  --surface: #111111;
-  --border: #1e1e1e;
-  --accent: #e2e2e2;
-  --muted: #555555;
-  --highlight: #ffffff;
-  --primary: #f97316;        /* orange CTA */
-  --primary-hover: #fb923c;
-  --primary-fg: #ffffff;
-  --grid-dot: rgba(255,255,255,0.055);
+  --background: #1a1b26;
+  --surface: #1f2335;
+  --border: #2e3250;
+  --accent: #c0caf5;
+  --muted: #6b7299;
+  --highlight: #c0caf5;
+  --primary: #ff9e64;        /* Tokyo Night orange */
+  --primary-hover: #ffb380;
+  --primary-fg: #1a1b26;
+  --grid-dot: rgba(122,162,247,0.07);
   color-scheme: dark;
 }
 

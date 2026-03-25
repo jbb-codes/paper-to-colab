@@ -5,8 +5,8 @@ import { useTheme } from "./ThemeProvider";
 function LogoMark() {
   return (
     <svg
-      width="22"
-      height="22"
+      width="28"
+      height="28"
       viewBox="0 0 22 22"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -59,24 +59,25 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-6 border-b border-border bg-background/80 backdrop-blur-sm">
       {/* Logo */}
-      <div className="flex items-center gap-2.5 text-highlight">
+      <div className="flex items-center gap-3 text-highlight">
         <LogoMark />
-        <span className="font-mono text-sm font-medium tracking-tight">
+        <span className="font-mono text-base font-semibold tracking-tight">
           paper<span style={{ color: "var(--primary)" }}>→</span>colab
         </span>
       </div>
 
       {/* Right side */}
-      <div className="flex items-center gap-4">
-        <span className="hidden sm:block font-mono text-xs text-muted tracking-widest uppercase">
+      <div className="flex items-center gap-3">
+        <span className="hidden sm:block font-mono text-xs tracking-widest uppercase px-2 py-1 rounded border border-border"
+          style={{ color: "var(--accent)", borderColor: "var(--border)" }}>
           v1.0
         </span>
-        <div className="w-px h-4 bg-border hidden sm:block" />
         <button
           onClick={toggle}
           data-testid="theme-toggle"
           aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-          className="w-7 h-7 flex items-center justify-center rounded text-muted hover:text-highlight transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded border border-border hover:border-accent transition-colors"
+          style={{ color: "var(--accent)" }}
         >
           <ThemeToggleIcon theme={theme} />
         </button>
