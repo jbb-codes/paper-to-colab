@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ThemeProvider from "@/components/ThemeProvider";
-import ThemeToggle from "@/components/ThemeToggle";
+import Header from "@/components/Header";
 
 export const metadata: Metadata = {
   title: "Paper to Colab — Research Paper → Google Colab Notebook",
@@ -37,7 +37,7 @@ export default function RootLayout({
       </head>
       <body className="bg-background text-highlight antialiased min-h-screen">
         <ThemeProvider>
-          <ThemeToggle />
+          <Header />
           {children}
         </ThemeProvider>
       </body>

@@ -16,6 +16,9 @@ const config: Config = {
         accent: "var(--accent)",
         muted: "var(--muted)",
         highlight: "var(--highlight)",
+        primary: "var(--primary)",
+        "primary-hover": "var(--primary-hover)",
+        "primary-fg": "var(--primary-fg)",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

@@ -7,23 +7,31 @@
 /* Dark theme (default) */
 :root,
 [data-theme="dark"] {
-  --background: #0a0a0a;
+  --background: #080808;
   --surface: #111111;
-  --border: #222222;
-  --accent: #e8e8e8;
-  --muted: #666666;
+  --border: #1e1e1e;
+  --accent: #e2e2e2;
+  --muted: #555555;
   --highlight: #ffffff;
+  --primary: #f97316;        /* orange CTA */
+  --primary-hover: #fb923c;
+  --primary-fg: #ffffff;
+  --grid-dot: rgba(255,255,255,0.055);
   color-scheme: dark;
 }
 
 /* Light theme */
 [data-theme="light"] {
-  --background: #fafafa;
-  --surface: #f0f0f0;
-  --border: #e0e0e0;
+  --background: #f8f8f6;
+  --surface: #eeeeed;
+  --border: #d8d8d6;
   --accent: #1a1a1a;
   --muted: #888888;
   --highlight: #0a0a0a;
+  --primary: #ea580c;
+  --primary-hover: #c2410c;
+  --primary-fg: #ffffff;
+  --grid-dot: rgba(0,0,0,0.06);
   color-scheme: light;
 }
 
@@ -69,11 +77,24 @@ pre,
 
 /* Focus ring consistent across browsers */
 :focus-visible {
-  outline: 1px solid var(--accent);
+  outline: 1px solid var(--primary);
   outline-offset: 2px;
 }
 
 /* Remove default focus ring; we use focus-visible */
 :focus:not(:focus-visible) {
   outline: none;
+}
+
+/* Dot-grid hero texture */
+.dot-grid {
+  background-image: radial-gradient(circle, var(--grid-dot) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Horizontal rule with fade */
+.rule-fade {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border) 20%, var(--border) 80%, transparent);
 }

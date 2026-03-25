@@ -30,7 +30,7 @@ export default function ResultView({
   return (
     <div
       data-testid="result-view"
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-16 animate-fade-in"
+      className="min-h-screen flex flex-col items-center justify-center px-4 pt-28 pb-16 animate-fade-in"
     >
       <div className="w-full max-w-xl">
         {/* Success indicator */}

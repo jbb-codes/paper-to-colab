@@ -28,7 +28,10 @@ export default function ApiKeyInput({ value, onChange }: ApiKeyInputProps) {
           placeholder="gsk_..."
           autoComplete="off"
           spellCheck={false}
-          className="w-full bg-surface border border-border rounded px-4 py-3 font-mono text-sm text-highlight placeholder-muted focus:outline-none focus:border-accent transition-colors pr-12"
+          className="w-full bg-surface border border-border rounded px-4 py-3 font-mono text-sm text-highlight placeholder-muted focus:outline-none transition-colors pr-12"
+        style={{ outline: "none" }}
+        onFocus={(e) => (e.currentTarget.style.borderColor = "var(--primary)")}
+        onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
         />
         <button
           type="button"
