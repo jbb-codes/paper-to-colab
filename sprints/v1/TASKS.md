@@ -19,9 +19,10 @@
   - Files: `app/page.tsx`, `components/ApiKeyInput.tsx`, `components/PdfDropzone.tsx`, `components/GenerateButton.tsx`
   - Completed: 2026-03-25 — Implemented ApiKeyInput (password type, show/hide toggle), PdfDropzone (drag-and-drop + click-to-browse), GenerateButton (disabled until both fields filled). Also fixed next.config.ts → next.config.js and converted serverExternalPackages to experimental.serverComponentsExternalPackages for Next.js 14. 7/7 Playwright E2E tests pass with screenshots.
 
-- [ ] Task 4: Build the processing state UI with animated status messages (P0)
+- [x] Task 4: Build the processing state UI with animated status messages (P0)
   - Acceptance: When generation is in progress, the form is replaced by a full-screen processing view showing: animated spinner or pulsing indicator, sequential status messages that cycle through the 7 defined stages with a typewriter or fade-in animation; no layout shift when transitioning from form to processing view
   - Files: `components/ProcessingView.tsx`, `lib/statusMessages.ts`
+  - Completed: 2026-03-25 — ProcessingView component with spinning border animation, fade-in/out message transitions, progress bar, step counter. statusMessages.ts exports all 7 sequential status messages. 9/9 unit tests + 3/3 E2E tests pass.
 
 - [ ] Task 5: Implement PDF text extraction API route (P0)
   - Acceptance: `POST /api/extract` accepts a multipart form upload of a PDF file; uses `pdf-parse` to extract full text; returns `{ text: string, pageCount: number }`; handles errors (non-PDF, empty file, oversized file >20MB) with clear error messages
