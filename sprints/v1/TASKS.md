@@ -44,9 +44,10 @@
   - Files: `lib/uploadGist.ts`, update `app/api/generate/route.ts`, update `components/ResultView.tsx`
   - Completed: 2026-03-25 — lib/uploadGist.ts POSTs to GitHub Gist API anonymously, constructs colabUrl. /api/generate now calls uploadGist after notebook build, returns colabUrl (gist failure is non-critical, still returns notebook). ResultView shows Open in Colab button when colabUrl present. 7/7 unit tests with mocked fetch pass.
 
-- [ ] Task 9: Wire up full end-to-end flow with error handling (P0)
+- [x] Task 9: Wire up full end-to-end flow with error handling (P0)
   - Acceptance: Clicking "Generate Notebook" triggers: (1) PDF extraction, (2) notebook generation with live status cycling, (3) result view with download + Colab buttons; all API errors surface as readable messages in the UI (invalid API key, model error, PDF parse failure, gist upload failure); no unhandled promise rejections; the user can reset and try again after any error
   - Files: `app/page.tsx` (state machine wiring), `components/ErrorView.tsx`
+  - Completed: 2026-03-25 — app/page.tsx is a full state machine (form → processing → result | error). Processing view advances through 7 status steps during API calls. ErrorView with reset button. All errors surface with readable messages. 7/7 E2E tests pass including processing and error states.
 
 - [ ] Task 10: Final UI polish — typography, spacing, responsive layout, micro-interactions (P2)
   - Acceptance: Page looks polished on 1280px+ desktop (primary target) and readable on 768px tablet; upload zone has hover/drag-active states; buttons have hover transitions; API key input has a show/hide toggle; result section animates in smoothly; overall aesthetic matches arcprize.org's precise, technical, confident visual language
