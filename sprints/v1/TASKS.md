@@ -39,9 +39,10 @@
   - Files: `lib/buildNotebook.ts`, update `app/api/generate/route.ts`, `components/ResultView.tsx`
   - Completed: 2026-03-25 — buildNotebook() utility produces valid nbformat 4.4 JSON with Python 3 kernel metadata. splitSource() converts strings to line arrays per Jupyter spec. titleToFilename() sanitizes titles for filenames. ResultView component with Download .ipynb and Open in Colab buttons. 13/13 unit tests pass.
 
-- [ ] Task 8: Implement anonymous GitHub Gist upload and "Open in Colab" link (P1)
+- [x] Task 8: Implement anonymous GitHub Gist upload and "Open in Colab" link (P1)
   - Acceptance: After notebook generation, the server POSTs the `.ipynb` content to `https://api.github.com/gists` as an anonymous gist (no auth token); extracts the gist ID from the response; constructs the Colab URL as `https://colab.research.google.com/gist/anonymous/<gistId>`; returns `colabUrl` alongside the notebook download; UI shows an "Open in Colab" button that opens this URL in a new tab
   - Files: `lib/uploadGist.ts`, update `app/api/generate/route.ts`, update `components/ResultView.tsx`
+  - Completed: 2026-03-25 — lib/uploadGist.ts POSTs to GitHub Gist API anonymously, constructs colabUrl. /api/generate now calls uploadGist after notebook build, returns colabUrl (gist failure is non-critical, still returns notebook). ResultView shows Open in Colab button when colabUrl present. 7/7 unit tests with mocked fetch pass.
 
 - [ ] Task 9: Wire up full end-to-end flow with error handling (P0)
   - Acceptance: Clicking "Generate Notebook" triggers: (1) PDF extraction, (2) notebook generation with live status cycling, (3) result view with download + Colab buttons; all API errors surface as readable messages in the UI (invalid API key, model error, PDF parse failure, gist upload failure); no unhandled promise rejections; the user can reset and try again after any error

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { SYSTEM_PROMPT, buildUserPrompt } from "@/lib/notebookPrompt";
 import { buildNotebook, titleToFilename } from "@/lib/buildNotebook";
+import { uploadGist } from "@/lib/uploadGist";
 
 export interface NotebookCell {
   type: "markdown" | "code";
@@ -104,11 +105,27 @@ export async function POST(req: NextRequest) {
     const notebookJson = JSON.stringify(notebook, null, 2);
     const filename = `${titleToFilename(title)}.ipynb`;
 
+    // Upload to GitHub Gist for Colab access
+    let colabUrl: string | null = null;
+    let gistError: string | null = null;
+    try {
+      const gistResult = await uploadGist(notebookJson, filename);
+      colabUrl = gistResult.colabUrl;
+    } catch (gistErr) {
+      // Gist upload is non-critical — still return the notebook
+      gistError =
+        gistErr instanceof Error
+          ? gistErr.message
+          : "Gist upload failed";
+    }
+
     return NextResponse.json({
       cells,
       notebookJson,
       filename,
       title,
+      colabUrl,
+      ...(gistError ? { gistError } : {}),
     });
   } catch (err: unknown) {
     if (err instanceof Groq.APIError) {
