@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
         },
       ],
       temperature: 0.3,
-      max_tokens: 8192,
+      max_tokens: 4096,
     });
 
     const rawContent = completion.choices[0]?.message?.content ?? "";
@@ -133,8 +133,8 @@ export async function POST(req: NextRequest) {
       const message =
         status === 401
           ? "Invalid Groq API key. Please check your key and try again."
-          : status === 429
-          ? "Groq API rate limit exceeded. Please wait a moment and try again."
+          : status === 429 || status === 413
+          ? "Groq token limit exceeded. Your paper may still be too large — please try a shorter paper or wait a minute before retrying."
           : `Groq API error: ${err.message}`;
 
       return NextResponse.json({ error: message }, { status });

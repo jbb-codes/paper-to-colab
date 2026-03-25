@@ -50,13 +50,19 @@ CRITICAL RULES:
 - Generate enough cells to make a thorough tutorial (typically 15–30 cells total)
 - The synthetic data and implementation must be realistic and specific to the paper's domain`;
 
+// Groq free tier: 12,000 TPM. Budget breakdown:
+//   System prompt: ~750 tokens
+//   Paper text:   ~3,000 tokens  (12,000 chars ÷ 4 chars/token)
+//   Response:     ~4,000 tokens  (max_tokens in route)
+//   Total:        ~7,750 tokens  (safe margin under 12,000)
+const MAX_PAPER_CHARS = 12_000;
+
 export function buildUserPrompt(paperText: string): string {
-  // Truncate paper text to avoid token limit issues (approx 100k chars ~ 25k tokens)
-  const truncated = paperText.slice(0, 100_000);
+  const truncated = paperText.slice(0, MAX_PAPER_CHARS);
   const truncationNote =
-    paperText.length > 100_000
-      ? `\n\n[Note: Paper was truncated to first 100,000 characters due to length.]`
+    paperText.length > MAX_PAPER_CHARS
+      ? `\n\n[Note: Paper text was trimmed to the first ${MAX_PAPER_CHARS.toLocaleString()} characters to fit within API token limits. Focus on the algorithms and methodology visible above.]`
       : "";
 
-  return `Here is the full text of the research paper. Generate a complete Google Colab notebook following the 7-section structure described in the system prompt.\n\nPAPER TEXT:\n${truncated}${truncationNote}`;
+  return `Here is the research paper text. Generate a complete Google Colab notebook following the 7-section structure described in the system prompt.\n\nPAPER TEXT:\n${truncated}${truncationNote}`;
 }
