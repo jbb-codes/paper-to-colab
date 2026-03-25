@@ -10,12 +10,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0a0a0a",
-        surface: "#111111",
-        border: "#222222",
-        accent: "#e8e8e8",
-        muted: "#666666",
-        highlight: "#ffffff",
+        background: "var(--background)",
+        surface: "var(--surface)",
+        border: "var(--border)",
+        accent: "var(--accent)",
+        muted: "var(--muted)",
+        highlight: "var(--highlight)",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

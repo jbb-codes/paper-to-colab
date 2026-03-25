@@ -4,13 +4,27 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-:root {
+/* Dark theme (default) */
+:root,
+[data-theme="dark"] {
   --background: #0a0a0a;
   --surface: #111111;
   --border: #222222;
   --accent: #e8e8e8;
   --muted: #666666;
   --highlight: #ffffff;
+  color-scheme: dark;
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --background: #fafafa;
+  --surface: #f0f0f0;
+  --border: #e0e0e0;
+  --accent: #1a1a1a;
+  --muted: #888888;
+  --highlight: #0a0a0a;
+  color-scheme: light;
 }
 
 * {
@@ -24,11 +38,7 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Prevent flash of light mode */
-html {
-  color-scheme: dark;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 code,
