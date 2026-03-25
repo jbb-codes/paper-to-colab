@@ -29,9 +29,8 @@ describe("Task 1 – Project setup verification", () => {
     expect(existsSync(resolve(root, "tailwind.config.ts"))).toBe(true);
   });
 
-  it("next.config.ts exists and exports serverExternalPackages for pdf-parse", () => {
-    const content = readFileSync(resolve(root, "next.config.ts"), "utf8");
-    expect(content).toContain("serverExternalPackages");
+  it("next.config.js exists and configures pdf-parse as external package", () => {
+    const content = readFileSync(resolve(root, "next.config.js"), "utf8");
     expect(content).toContain("pdf-parse");
   });
 

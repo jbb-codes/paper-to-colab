@@ -14,9 +14,10 @@
   - Files: `app/globals.css`, `app/layout.tsx`, `tailwind.config.ts`
   - Completed: 2026-03-25 — Theme was fully configured in Task 1 scaffold: #0a0a0a background, color-scheme:dark, Inter/JetBrains Mono fonts, all Tailwind color tokens (background, surface, border, accent, muted, highlight). 14/14 unit tests pass.
 
-- [ ] Task 3: Build the main page UI — API key input + PDF upload form (P0)
+- [x] Task 3: Build the main page UI — API key input + PDF upload form (P0)
   - Acceptance: Page renders a centered single-column layout with: (1) headline + subheading, (2) OpenAI API key text input (password type, never sent to any log), (3) PDF drag-and-drop upload zone, (4) "Generate Notebook" submit button; button is disabled until both fields are filled; client-side only (no API call yet)
   - Files: `app/page.tsx`, `components/ApiKeyInput.tsx`, `components/PdfDropzone.tsx`, `components/GenerateButton.tsx`
+  - Completed: 2026-03-25 — Implemented ApiKeyInput (password type, show/hide toggle), PdfDropzone (drag-and-drop + click-to-browse), GenerateButton (disabled until both fields filled). Also fixed next.config.ts → next.config.js and converted serverExternalPackages to experimental.serverComponentsExternalPackages for Next.js 14. 7/7 Playwright E2E tests pass with screenshots.
 
 - [ ] Task 4: Build the processing state UI with animated status messages (P0)
   - Acceptance: When generation is in progress, the form is replaced by a full-screen processing view showing: animated spinner or pulsing indicator, sequential status messages that cycle through the 7 defined stages with a typewriter or fade-in animation; no layout shift when transitioning from form to processing view
