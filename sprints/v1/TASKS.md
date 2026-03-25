@@ -9,9 +9,10 @@
   - Files: `package.json`, `tailwind.config.ts`, `app/layout.tsx`, `app/globals.css`, `next.config.ts`
   - Completed: 2026-03-25 — Manually scaffolded Next.js 14 (App Router), Tailwind, postcss, autoprefixer, groq-sdk, pdf-parse, vitest. 10/10 tests pass. Security: esbuild/glob vulns are dev-only; Next.js CVEs require v16 upgrade — deferred to v2 (not deployed in v1).
 
-- [ ] Task 2: Build the global dark theme and base layout (P0)
+- [x] Task 2: Build the global dark theme and base layout (P0)
   - Acceptance: App renders with near-black background (`#0a0a0a`), white text, JetBrains Mono for code accents, Inter for body; matches arcprize.org aesthetic; no light mode flicker
   - Files: `app/globals.css`, `app/layout.tsx`, `tailwind.config.ts`
+  - Completed: 2026-03-25 — Theme was fully configured in Task 1 scaffold: #0a0a0a background, color-scheme:dark, Inter/JetBrains Mono fonts, all Tailwind color tokens (background, surface, border, accent, muted, highlight). 14/14 unit tests pass.
 
 - [ ] Task 3: Build the main page UI — API key input + PDF upload form (P0)
   - Acceptance: Page renders a centered single-column layout with: (1) headline + subheading, (2) OpenAI API key text input (password type, never sent to any log), (3) PDF drag-and-drop upload zone, (4) "Generate Notebook" submit button; button is disabled until both fields are filled; client-side only (no API call yet)
