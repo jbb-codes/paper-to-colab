@@ -28,7 +28,7 @@ describe("Task 2 – Global dark theme and base layout", () => {
   it("tailwind.config.ts defines background color token", () => {
     const cfg = readFileSync(resolve(root, "tailwind.config.ts"), "utf8");
     expect(cfg).toContain("background");
-    expect(cfg).toContain("#0a0a0a");
+    expect(cfg).toContain("var(--background)");
   });
 
   it("tailwind.config.ts defines text-highlight token", () => {

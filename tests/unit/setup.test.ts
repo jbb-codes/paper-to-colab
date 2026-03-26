@@ -10,9 +10,9 @@ describe("Task 1 – Project setup verification", () => {
     expect(pkg.name).toBe("paper-to-colab");
   });
 
-  it("package.json lists next@14 as a dependency", () => {
+  it("package.json lists next@15 as a dependency", () => {
     const pkg = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
-    expect(pkg.dependencies["next"]).toMatch(/^14\./);
+    expect(pkg.dependencies["next"]).toMatch(/^15./);
   });
 
   it("package.json lists groq-sdk as a dependency", () => {
