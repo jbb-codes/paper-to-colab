@@ -40,7 +40,7 @@ describe("Task 8 — Anonymous GitHub Gist upload", () => {
   it("uploadGist posts to the correct GitHub Gist API endpoint", async () => {
     const mockFetch = vi.fn().mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ id: "xyz789", html_url: "https://gist.github.com/xyz789" }),
+      json: async () => ({ id: "abcdef789012", html_url: "https://gist.github.com/abcdef789012" }),
     }) as unknown as typeof fetch;
 
     global.fetch = mockFetch;
@@ -59,7 +59,7 @@ describe("Task 8 — Anonymous GitHub Gist upload", () => {
   it("uploadGist sends correct content-type header", async () => {
     const mockFetch = vi.fn().mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ id: "xyz789", html_url: "https://gist.github.com/xyz789" }),
+      json: async () => ({ id: "abcdef789012", html_url: "https://gist.github.com/abcdef789012" }),
     }) as unknown as typeof fetch;
 
     global.fetch = mockFetch;
@@ -86,7 +86,7 @@ describe("Task 8 — Anonymous GitHub Gist upload", () => {
   });
 
   it("colabUrl follows the correct format", async () => {
-    const gistId = "test-gist-id-12345";
+    const gistId = "abc123def456789a";
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({ id: gistId, html_url: `https://gist.github.com/${gistId}` }),

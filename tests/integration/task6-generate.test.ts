@@ -42,15 +42,15 @@ describe("Task 6 – Notebook generation API route and prompt", () => {
   it("buildUserPrompt wraps the paper text correctly", () => {
     const prompt = buildUserPrompt("This is a test paper.");
     expect(prompt).toContain("This is a test paper.");
-    expect(prompt).toContain("PAPER TEXT:");
+    expect(prompt).toContain("<paper>");
   });
 
-  it("buildUserPrompt truncates paper text at 100,000 chars", () => {
-    const longText = "a".repeat(150_000);
+  it("buildUserPrompt truncates paper text at 12,000 chars", () => {
+    const longText = "a".repeat(20_000);
     const prompt = buildUserPrompt(longText);
-    expect(prompt).toContain("truncated");
+    expect(prompt).toContain("12,000");
     // The truncated text should be ~100k chars plus prompt overhead
-    expect(prompt.length).toBeLessThan(115_000);
+    expect(prompt.length).toBeLessThan(15_000);
   });
 
   it("generate route exports a POST handler", () => {

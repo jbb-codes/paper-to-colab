@@ -3,6 +3,7 @@ import Groq from "groq-sdk";
 import { SYSTEM_PROMPT, buildUserPrompt } from "@/lib/notebookPrompt";
 import { buildNotebook, titleToFilename } from "@/lib/buildNotebook";
 import { uploadGist } from "@/lib/uploadGist";
+import { scanForDangerousPatterns } from "@/lib/validateCells";
 
 export interface NotebookCell {
   type: "markdown" | "code";
@@ -90,10 +91,25 @@ export async function POST(req: NextRequest) {
         throw new Error("No valid cells found in response");
       }
     } catch {
+      console.error("[generate] LLM parse failure, raw snippet:", rawContent.slice(0, 500));
       return NextResponse.json(
         {
           error: `Failed to parse notebook cells from AI response. The model may have returned an invalid format. Please try again.`,
-          raw: rawContent.slice(0, 500),
+        },
+        { status: 422 }
+      );
+    }
+
+    // Layer 2 prompt injection defence: scan generated code cells for dangerous patterns
+    const dangerousMatch = scanForDangerousPatterns(cells);
+    if (dangerousMatch) {
+      console.error(
+        `[generate] Dangerous pattern "${dangerousMatch.pattern}" detected in cell ${dangerousMatch.cellIndex} — blocking response`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Generation blocked: the paper may contain adversarial content. Please try a different paper.",
         },
         { status: 422 }
       );
@@ -140,10 +156,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: message }, { status });
     }
 
-    const message =
-      err instanceof Error ? err.message : "An unexpected error occurred";
+    console.error("[generate] Unexpected error:", err);
     return NextResponse.json(
-      { error: `Generation failed: ${message}` },
+      { error: "Generation failed. Please try again." },
       { status: 500 }
     );
   }

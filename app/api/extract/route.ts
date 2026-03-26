@@ -62,10 +62,9 @@ export async function POST(req: NextRequest) {
       pageCount: result.numpages,
     });
   } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : "Failed to parse PDF";
+    console.error("[extract] PDF parse error:", err);
     return NextResponse.json(
-      { error: `PDF parsing error: ${message}` },
+      { error: "PDF parsing failed." },
       { status: 500 }
     );
   }
