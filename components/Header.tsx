@@ -1,6 +1,17 @@
 "use client";
 
-import { useTheme } from "./ThemeProvider";
+import { useEffect, useState } from "react";
+
+type Theme = "dark" | "light";
+
+function getInitialTheme(): Theme {
+  if (typeof window === "undefined") return "dark";
+  const stored = localStorage.getItem("theme");
+  if (stored === "light" || stored === "dark") return stored;
+  return window.matchMedia("(prefers-color-scheme: light)").matches
+    ? "light"
+    : "dark";
+}
 
 function LogoMark() {
   return (
@@ -30,7 +41,7 @@ function LogoMark() {
   );
 }
 
-function ThemeToggleIcon({ theme }: { theme: "dark" | "light" }) {
+function ThemeToggleIcon({ theme }: { theme: Theme }) {
   if (theme === "dark") {
     return (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -54,7 +65,20 @@ function ThemeToggleIcon({ theme }: { theme: "dark" | "light" }) {
 }
 
 export default function Header() {
-  const { theme, toggle } = useTheme();
+  const [theme, setTheme] = useState<Theme>("dark");
+
+  useEffect(() => {
+    const initial = getInitialTheme();
+    setTheme(initial);
+    document.documentElement.setAttribute("data-theme", initial);
+  }, []);
+
+  const toggle = () => {
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+    setTheme(next);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-6 border-b border-border bg-background/80 backdrop-blur-sm">
@@ -73,6 +97,7 @@ export default function Header() {
           v1.0
         </span>
         <button
+          type="button"
           onClick={toggle}
           data-testid="theme-toggle"
           aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}

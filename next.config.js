@@ -5,6 +5,11 @@
 const ALLOWED_ORIGIN =
   process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 
+// Next.js dev mode uses eval() for React Refresh / HMR, so we need
+// 'unsafe-eval' in script-src during development. Production keeps the
+// stricter policy.
+const isDev = process.env.NODE_ENV !== "production";
+
 const securityHeaders = [
   // Prevent the page from being embedded in iframes (clickjacking)
   { key: "X-Frame-Options", value: "DENY" },
@@ -24,7 +29,7 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
       "connect-src 'self' https://api.groq.com https://api.github.com",
     ].join("; "),

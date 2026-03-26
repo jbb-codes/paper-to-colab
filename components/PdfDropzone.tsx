@@ -52,6 +52,7 @@ export default function PdfDropzone({ file, onFileChange }: PdfDropzoneProps) {
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
     setIsDragOver(true);
   };
   const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
@@ -62,7 +63,7 @@ export default function PdfDropzone({ file, onFileChange }: PdfDropzoneProps) {
     e.preventDefault();
     setIsDragOver(false);
     const dropped = e.dataTransfer.files[0];
-    if (dropped && dropped.type === "application/pdf") onFileChange(dropped);
+    if (dropped && (dropped.type === "application/pdf" || dropped.name.toLowerCase().endsWith(".pdf"))) onFileChange(dropped);
   };
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0] ?? null;

@@ -7,5 +7,3 @@ export const STATUS_MESSAGES = [
   "Assembling the Colab notebook...",
   "Uploading to GitHub Gist for Colab access...",
 ] as const;
-
-export type StatusMessage = (typeof STATUS_MESSAGES)[number];
