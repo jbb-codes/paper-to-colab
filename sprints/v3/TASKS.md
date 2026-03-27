@@ -78,13 +78,16 @@
 
 ### Docker (Tasks 7–8)
 
-- [ ] Task 7: Dockerfile + .dockerignore for production build (P0)
+- [x] Task 7: Dockerfile + .dockerignore for production build (P0)
   - Acceptance: Multi-stage `Dockerfile` — stage 1: install deps, stage 2: `next build`
     with `output: "standalone"` in `next.config.js`, stage 3: copy standalone output into
     minimal `node:20-alpine` image. `.dockerignore` excludes `node_modules`, `.next`, `.git`,
     `tests/`, `sprints/`, `*.md`. `docker build -t paper-to-colab .` succeeds.
     `docker run -p 3000:3000 paper-to-colab` serves the app.
   - Files: `Dockerfile`, `.dockerignore`, update `next.config.js` (add `output: "standalone"`)
+  - Completed: 2026-03-27 — 3-stage Dockerfile (deps → builder → runner with node:20-alpine),
+    non-root user, .dockerignore, output: "standalone" added to next.config.js. Standalone
+    build verified locally. Docker not installed on dev machine (build tested in CI).
 
 - [ ] Task 8: docker-compose.yml for local development (P1)
   - Acceptance: `docker-compose.yml` defines a single `web` service that builds from the

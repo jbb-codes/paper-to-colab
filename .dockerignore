@@ -1,0 +1,15 @@
+node_modules
+.next
+.git
+.gitignore
+tests/
+sprints/
+*.md
+.env*
+.DS_Store
+playwright-report/
+test-results/
+tests/screenshots/
+coverage/
+.vscode/
+.idea/

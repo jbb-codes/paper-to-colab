@@ -43,6 +43,8 @@ const corsHeaders = [
 ];
 
 const nextConfig = {
+  // Standalone output for Docker — copies only the files needed to run
+  output: "standalone",
   // pdf-parse uses native Node modules — mark as server-only
   serverExternalPackages: ["pdf-parse"],
 
