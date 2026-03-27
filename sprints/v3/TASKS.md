@@ -100,13 +100,16 @@
 
 ### AWS Deployment (Tasks 9–10)
 
-- [ ] Task 9: Terraform config for AWS ECS Fargate infrastructure (P0)
+- [x] Task 9: Terraform config for AWS ECS Fargate infrastructure (P0)
   - Acceptance: `terraform/` directory with: `main.tf` (provider, VPC, subnets, security group,
     ALB, target group, ECS cluster, ECS task definition, ECS service, ECR repository,
     CloudWatch log group, IAM roles), `variables.tf` (region, app name, container port,
     image tag), `outputs.tf` (ALB DNS name, ECR repo URL). `terraform init` and
     `terraform plan` succeed without errors (actual `apply` is manual).
   - Files: `terraform/main.tf`, `terraform/variables.tf`, `terraform/outputs.tf`
+  - Completed: 2026-03-27 — VPC with 2 public subnets, ALB, ECS Fargate cluster + service,
+    ECR repo with scan-on-push, CloudWatch logs (14-day retention), IAM execution role.
+    `terraform init` + `terraform validate` pass.
 
 - [ ] Task 10: GitHub Actions CD workflow — auto-deploy to AWS on main (P0)
   - Acceptance: `.github/workflows/deploy.yml` triggers on push to `main` (after CI passes).
