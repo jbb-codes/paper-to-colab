@@ -89,12 +89,14 @@
     non-root user, .dockerignore, output: "standalone" added to next.config.js. Standalone
     build verified locally. Docker not installed on dev machine (build tested in CI).
 
-- [ ] Task 8: docker-compose.yml for local development (P1)
+- [x] Task 8: docker-compose.yml for local development (P1)
   - Acceptance: `docker-compose.yml` defines a single `web` service that builds from the
     Dockerfile, maps port 3000, passes `GROQ_API_KEY` and `GITHUB_TOKEN` from host env,
     and sets `NODE_ENV=production`. `docker compose up --build` starts the app.
     `docker compose down` stops it cleanly.
   - Files: `docker-compose.yml`
+  - Completed: 2026-03-27 — Single `web` service with healthcheck, env var passthrough
+    (GROQ_API_KEY, GITHUB_TOKEN, NEXT_PUBLIC_BASE_URL), restart policy, port 3000.
 
 ### AWS Deployment (Tasks 9–10)
 
