@@ -54,7 +54,7 @@
 
 ### CI/CD Pipeline (Tasks 5–6)
 
-- [ ] Task 5: GitHub Actions CI workflow (P0)
+- [x] Task 5: GitHub Actions CI workflow (P0)
   - Acceptance: `.github/workflows/ci.yml` triggers on push to `main` and all PRs. Jobs:
     (1) **lint**: `npm run lint`, (2) **test**: `npm test` (Vitest unit + integration),
     (3) **e2e**: install Playwright browsers, `npm run build`, `npm run test:e2e` (excludes
@@ -63,6 +63,9 @@
     run on `ubuntu-latest` with Node 20. Workflow uses `actions/cache` for `node_modules`.
     Repository connected via `gh` CLI.
   - Files: `.github/workflows/ci.yml`
+  - Completed: 2026-03-27 — 5 parallel CI jobs: lint, test, e2e (with Playwright artifact
+    upload on failure), audit (--audit-level=high), security (semgrep container). Triggers
+    on push to main and all PRs. Uses npm cache via setup-node.
 
 - [ ] Task 6: Branch protection + merge gating (P0)
   - Acceptance: GitHub branch protection rule on `main` requires the CI workflow status checks
