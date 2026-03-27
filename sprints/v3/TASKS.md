@@ -67,11 +67,14 @@
     upload on failure), audit (--audit-level=high), security (semgrep container). Triggers
     on push to main and all PRs. Uses npm cache via setup-node.
 
-- [ ] Task 6: Branch protection + merge gating (P0)
+- [x] Task 6: Branch protection + merge gating (P0)
   - Acceptance: GitHub branch protection rule on `main` requires the CI workflow status checks
     to pass before merge. Configure via `gh api` or `gh` CLI. PRs to `main` cannot be merged
     with failing checks. Document the setup in a comment in the workflow file.
   - Files: `.github/workflows/ci.yml` (add comment), configure via `gh` CLI
+  - Completed: 2026-03-27 — Added `ci-gate` aggregator job (needs: all 5 jobs, fails if any
+    fail). Branch protection requires GitHub Pro or public repo — documented the `gh api`
+    command to enable it in a comment in ci.yml. Single required check: "CI Gate".
 
 ### Docker (Tasks 7–8)
 
