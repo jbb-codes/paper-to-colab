@@ -30,6 +30,8 @@ node_modules/
 *.pem
 *.key
 *.cert
+aws-cred*
+*credentials*
 
 # --- Logs -----------------------------------------------------------
 npm-debug.log*
