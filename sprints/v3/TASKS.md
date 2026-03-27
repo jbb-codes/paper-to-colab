@@ -28,7 +28,7 @@
   - Completed: 2026-03-27 — 21 integration tests (8 extract + 13 generate). Mocked pdf-parse,
     groq-sdk, and uploadGist. Added @/ path alias to vitest.config.ts. 254 total tests passing.
 
-- [ ] Task 3: Playwright E2E tests with screenshots (P1)
+- [x] Task 3: Playwright E2E tests with screenshots (P1)
   - Acceptance: Playwright config (`playwright.config.ts`) set up for the Next.js dev server.
     E2E tests cover: (1) page loads with correct title, (2) enter API key → upload PDF →
     click generate → see loading spinner → see result, (3) theme toggle switches theme,
@@ -36,6 +36,8 @@
     (`test-results/` directory). `npm run test:e2e` passes in headless mode.
   - Files: `playwright.config.ts`, `tests/e2e/full-flow.spec.ts`,
     `tests/e2e/theme-toggle.spec.ts`, `tests/e2e/drag-drop.spec.ts`
+  - Completed: 2026-03-27 — 7 E2E tests across 3 files with 10 screenshots. Updated
+    playwright.config.ts with webServer, quality project, screenshot: "on". All 7 pass.
 
 - [ ] Task 4: Real quality test — generate notebook from research.pdf and validate (P1)
   - Acceptance: A separate Playwright test file that runs in headed mode (visible browser).
