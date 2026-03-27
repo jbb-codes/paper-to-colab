@@ -1,6 +1,6 @@
 # Sprint v3 — Tasks: Production-Ready
 
-## Status: Not Started
+## Status: Complete
 
 ---
 
@@ -111,7 +111,7 @@
     ECR repo with scan-on-push, CloudWatch logs (14-day retention), IAM execution role.
     `terraform init` + `terraform validate` pass.
 
-- [ ] Task 10: GitHub Actions CD workflow — auto-deploy to AWS on main (P0)
+- [x] Task 10: GitHub Actions CD workflow — auto-deploy to AWS on main (P0)
   - Acceptance: `.github/workflows/deploy.yml` triggers on push to `main` (after CI passes).
     Steps: (1) configure AWS credentials from GitHub Secrets (`AWS_ACCESS_KEY_ID`,
     `AWS_SECRET_ACCESS_KEY`), (2) log in to ECR, (3) build + tag + push Docker image,
@@ -119,3 +119,6 @@
     `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `AWS_ACCOUNT_ID`.
     Document required secrets in workflow file comments.
   - Files: `.github/workflows/deploy.yml`
+  - Completed: 2026-03-27 — Triggers via workflow_run after CI passes on main. Uses
+    aws-actions for credentials and ECR login. Tags images with git SHA + latest.
+    Forces new ECS deployment. All 4 required secrets documented in file header.

@@ -1,0 +1,60 @@
+name: Deploy
+
+# Runs after CI passes on main — builds Docker image, pushes to ECR,
+# and updates the ECS service to deploy the new image.
+#
+# Required GitHub Secrets:
+#   AWS_ACCESS_KEY_ID     — IAM user access key
+#   AWS_SECRET_ACCESS_KEY — IAM user secret key
+#   AWS_REGION            — e.g. us-east-1
+#   AWS_ACCOUNT_ID        — 12-digit AWS account ID
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+
+env:
+  APP_NAME: paper-to-colab
+
+jobs:
+  deploy:
+    name: Build & Deploy to ECS
+    runs-on: ubuntu-latest
+    # Only deploy if CI passed and it was a push (not a PR)
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$APP_NAME:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$APP_NAME:$IMAGE_TAG $ECR_REGISTRY/$APP_NAME:latest
+          docker push $ECR_REGISTRY/$APP_NAME:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$APP_NAME:latest
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service \
+            --cluster $APP_NAME-cluster \
+            --service $APP_NAME-service \
+            --force-new-deployment \
+            --no-cli-pager
+          echo "Deployment triggered. ECS will roll out the new task."
