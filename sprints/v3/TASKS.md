@@ -39,7 +39,7 @@
   - Completed: 2026-03-27 — 7 E2E tests across 3 files with 10 screenshots. Updated
     playwright.config.ts with webServer, quality project, screenshot: "on". All 7 pass.
 
-- [ ] Task 4: Real quality test — generate notebook from research.pdf and validate (P1)
+- [x] Task 4: Real quality test — generate notebook from research.pdf and validate (P1)
   - Acceptance: A separate Playwright test file that runs in headed mode (visible browser).
     Flow: open app → enter a real Groq API key (read from `GROQ_API_KEY` env var) →
     upload `research.pdf` → wait for generation (up to 120s timeout) → download the notebook.
@@ -48,6 +48,9 @@
     present. Test is in a separate Playwright project so it only runs when explicitly invoked
     (`npm run test:e2e -- --project=quality`), not in CI.
   - Files: `tests/e2e/quality.spec.ts`, update `playwright.config.ts` with `quality` project
+  - Completed: 2026-03-27 — Quality test validates: valid JSON, nbformat 4, >=6 cells,
+    code + markdown cells present, non-empty source, no dangerous patterns. Runs headed,
+    excluded from CI via separate Playwright project. 5 screenshots at each step.
 
 ### CI/CD Pipeline (Tasks 5–6)
 
