@@ -18,13 +18,15 @@
     splitSource edge cases, uploadGist payload/validation/error paths, SYSTEM_PROMPT structure,
     sanitize/truncation boundaries, scanForDangerousPatterns edge cases, statusMessages structure.
 
-- [ ] Task 2: Integration tests for API routes with mocked externals (P0)
+- [x] Task 2: Integration tests for API routes with mocked externals (P0)
   - Acceptance: ~15 tests covering `/api/extract` (valid PDF → 200 with text + pageCount;
     invalid file → 400; oversized file → 400; parse failure → 500 generic error) and
     `/api/generate` (valid request with mocked Groq → 200 with notebook JSON + colabUrl;
     missing apiKey → 400; Groq failure → 500; dangerous cells → 422). External `fetch` calls
     (Groq, GitHub) are mocked via `vi.mock` or `vi.spyOn(global, 'fetch')`. All tests pass.
   - Files: `tests/integration/extract.test.ts`, `tests/integration/generate.test.ts`
+  - Completed: 2026-03-27 — 21 integration tests (8 extract + 13 generate). Mocked pdf-parse,
+    groq-sdk, and uploadGist. Added @/ path alias to vitest.config.ts. 254 total tests passing.
 
 - [ ] Task 3: Playwright E2E tests with screenshots (P1)
   - Acceptance: Playwright config (`playwright.config.ts`) set up for the Next.js dev server.
