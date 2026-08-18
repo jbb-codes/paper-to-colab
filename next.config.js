@@ -18,20 +18,23 @@ const securityHeaders = [
   // Only send the origin on cross-origin requests, no path
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   // Disable access to camera, mic, and geolocation
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=()",
+  },
   // Force HTTPS for 2 years (only effective in production over TLS)
   {
     key: "Strict-Transport-Security",
     value: "max-age=63072000; includeSubDomains; preload",
   },
-  // Restrict resource loading to same origin; allow Groq + GitHub for API calls
+  // Restrict resource loading to same origin; allow Anthropic + GitHub for API calls
   {
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
-      "connect-src 'self' https://api.groq.com https://api.github.com",
+      "connect-src 'self' https://api.anthropic.com https://api.github.com",
     ].join("; "),
   },
 ];
