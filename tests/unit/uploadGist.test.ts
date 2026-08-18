@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { uploadGist } from "../../lib/uploadGist";
 
 function mockFetchSuccess(id = "abc123def456", htmlUrl?: string) {
@@ -18,6 +18,20 @@ function mockFetchError(status: number, message: string) {
     json: async () => ({ message }),
   }) as unknown as typeof fetch;
 }
+
+const ORIGINAL_GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+
+beforeEach(() => {
+  process.env.GITHUB_TOKEN = "ghp_testtoken123";
+});
+
+afterEach(() => {
+  if (ORIGINAL_GITHUB_TOKEN === undefined) {
+    delete process.env.GITHUB_TOKEN;
+  } else {
+    process.env.GITHUB_TOKEN = ORIGINAL_GITHUB_TOKEN;
+  }
+});
 
 describe("uploadGist — payload structure", () => {
   beforeEach(() => {
@@ -74,20 +88,20 @@ describe("uploadGist — response handling", () => {
   it("returns gistId, gistUrl, and colabUrl on success", async () => {
     global.fetch = mockFetchSuccess("deadbeef1234");
 
-    const result = await uploadGist('{}', "test.ipynb");
+    const result = await uploadGist("{}", "test.ipynb");
 
     expect(result.gistId).toBe("deadbeef1234");
     expect(result.gistUrl).toBe("https://gist.github.com/deadbeef1234");
     expect(result.colabUrl).toBe(
-      "https://colab.research.google.com/gist/anonymous/deadbeef1234"
+      "https://colab.research.google.com/gist/anonymous/deadbeef1234",
     );
   });
 
   it("throws on non-ok response with status and message", async () => {
     global.fetch = mockFetchError(422, "Validation Failed");
 
-    await expect(uploadGist('{}', "test.ipynb")).rejects.toThrow(
-      /GitHub Gist API error \(422\): Validation Failed/
+    await expect(uploadGist("{}", "test.ipynb")).rejects.toThrow(
+      /GitHub Gist API error \(422\): Validation Failed/,
     );
   });
 
@@ -98,8 +112,8 @@ describe("uploadGist — response handling", () => {
       json: async () => ({}),
     }) as unknown as typeof fetch;
 
-    await expect(uploadGist('{}', "test.ipynb")).rejects.toThrow(
-      /Unknown error/
+    await expect(uploadGist("{}", "test.ipynb")).rejects.toThrow(
+      /Unknown error/,
     );
   });
 
@@ -107,12 +121,52 @@ describe("uploadGist — response handling", () => {
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: false,
       status: 500,
-      json: async () => { throw new Error("bad json"); },
+      json: async () => {
+        throw new Error("bad json");
+      },
     }) as unknown as typeof fetch;
 
-    await expect(uploadGist('{}', "test.ipynb")).rejects.toThrow(
-      /Unknown error/
+    await expect(uploadGist("{}", "test.ipynb")).rejects.toThrow(
+      /Unknown error/,
     );
+  });
+});
+
+describe("uploadGist — authentication", () => {
+  const ORIGINAL_ENV = process.env.GITHUB_TOKEN;
+
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  afterEach(() => {
+    if (ORIGINAL_ENV === undefined) {
+      delete process.env.GITHUB_TOKEN;
+    } else {
+      process.env.GITHUB_TOKEN = ORIGINAL_ENV;
+    }
+  });
+
+  it("sends an Authorization header with the GITHUB_TOKEN when configured", async () => {
+    process.env.GITHUB_TOKEN = "ghp_testtoken123";
+    const mockFn = mockFetchSuccess();
+    global.fetch = mockFn;
+
+    await uploadGist('{"nbformat":4}', "test.ipynb");
+
+    const headers = mockFn.mock.calls[0][1].headers;
+    expect(headers.Authorization).toBe("Bearer ghp_testtoken123");
+  });
+
+  it("throws a clear configuration error when GITHUB_TOKEN is not set", async () => {
+    delete process.env.GITHUB_TOKEN;
+    const mockFn = mockFetchSuccess();
+    global.fetch = mockFn;
+
+    await expect(uploadGist('{"nbformat":4}', "test.ipynb")).rejects.toThrow(
+      /GITHUB_TOKEN/,
+    );
+    expect(mockFn).not.toHaveBeenCalled();
   });
 });
 
@@ -123,7 +177,7 @@ describe("uploadGist — gistId validation", () => {
 
   it("accepts valid hex gist IDs", async () => {
     global.fetch = mockFetchSuccess("abcdef0123456789");
-    const result = await uploadGist('{}', "test.ipynb");
+    const result = await uploadGist("{}", "test.ipynb");
     expect(result.gistId).toBe("abcdef0123456789");
   });
 
@@ -136,8 +190,8 @@ describe("uploadGist — gistId validation", () => {
       }),
     }) as unknown as typeof fetch;
 
-    await expect(uploadGist('{}', "test.ipynb")).rejects.toThrow(
-      /Invalid gist ID/
+    await expect(uploadGist("{}", "test.ipynb")).rejects.toThrow(
+      /Invalid gist ID/,
     );
   });
 
@@ -150,14 +204,14 @@ describe("uploadGist — gistId validation", () => {
       }),
     }) as unknown as typeof fetch;
 
-    await expect(uploadGist('{}', "test.ipynb")).rejects.toThrow(
-      /Invalid gist ID/
+    await expect(uploadGist("{}", "test.ipynb")).rejects.toThrow(
+      /Invalid gist ID/,
     );
   });
 
   it("accepts uppercase hex characters in gist ID", async () => {
     global.fetch = mockFetchSuccess("ABCDEF0123456789");
-    const result = await uploadGist('{}', "test.ipynb");
+    const result = await uploadGist("{}", "test.ipynb");
     expect(result.gistId).toBe("ABCDEF0123456789");
   });
 });

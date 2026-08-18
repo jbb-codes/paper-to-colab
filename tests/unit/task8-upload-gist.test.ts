@@ -1,10 +1,24 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { existsSync } from "fs";
 import { resolve } from "path";
 
 const root = resolve(__dirname, "../../");
 
 describe("Task 8 — Anonymous GitHub Gist upload", () => {
+  const ORIGINAL_ENV = process.env.GITHUB_TOKEN;
+
+  beforeEach(() => {
+    process.env.GITHUB_TOKEN = "ghp_testtoken123";
+  });
+
+  afterEach(() => {
+    if (ORIGINAL_ENV === undefined) {
+      delete process.env.GITHUB_TOKEN;
+    } else {
+      process.env.GITHUB_TOKEN = ORIGINAL_ENV;
+    }
+  });
+
   it("lib/uploadGist.ts exists", () => {
     expect(existsSync(resolve(root, "lib/uploadGist.ts"))).toBe(true);
   });
@@ -28,19 +42,22 @@ describe("Task 8 — Anonymous GitHub Gist upload", () => {
     const { uploadGist } = await import("../../lib/uploadGist");
     const result = await uploadGist(
       '{"nbformat": 4, "cells": []}',
-      "test-notebook.ipynb"
+      "test-notebook.ipynb",
     );
 
     expect(result.gistId).toBe(mockGistId);
     expect(result.colabUrl).toBe(
-      `https://colab.research.google.com/gist/anonymous/${mockGistId}`
+      `https://colab.research.google.com/gist/anonymous/${mockGistId}`,
     );
   });
 
   it("uploadGist posts to the correct GitHub Gist API endpoint", async () => {
     const mockFetch = vi.fn().mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ id: "abcdef789012", html_url: "https://gist.github.com/abcdef789012" }),
+      json: async () => ({
+        id: "abcdef789012",
+        html_url: "https://gist.github.com/abcdef789012",
+      }),
     }) as unknown as typeof fetch;
 
     global.fetch = mockFetch;
@@ -52,14 +69,17 @@ describe("Task 8 — Anonymous GitHub Gist upload", () => {
       "https://api.github.com/gists",
       expect.objectContaining({
         method: "POST",
-      })
+      }),
     );
   });
 
   it("uploadGist sends correct content-type header", async () => {
     const mockFetch = vi.fn().mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ id: "abcdef789012", html_url: "https://gist.github.com/abcdef789012" }),
+      json: async () => ({
+        id: "abcdef789012",
+        html_url: "https://gist.github.com/abcdef789012",
+      }),
     }) as unknown as typeof fetch;
 
     global.fetch = mockFetch;
@@ -80,26 +100,24 @@ describe("Task 8 — Anonymous GitHub Gist upload", () => {
     }) as unknown as typeof fetch;
 
     const { uploadGist } = await import("../../lib/uploadGist");
-    await expect(
-      uploadGist('{"nbformat": 4}', "test.ipynb")
-    ).rejects.toThrow();
+    await expect(uploadGist('{"nbformat": 4}', "test.ipynb")).rejects.toThrow();
   });
 
   it("colabUrl follows the correct format", async () => {
     const gistId = "abc123def456789a";
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ id: gistId, html_url: `https://gist.github.com/${gistId}` }),
+      json: async () => ({
+        id: gistId,
+        html_url: `https://gist.github.com/${gistId}`,
+      }),
     }) as unknown as typeof fetch;
 
     const { uploadGist } = await import("../../lib/uploadGist");
-    const { colabUrl } = await uploadGist(
-      '{"nbformat": 4}',
-      "notebook.ipynb"
-    );
+    const { colabUrl } = await uploadGist('{"nbformat": 4}', "notebook.ipynb");
 
     expect(colabUrl).toMatch(
-      /^https:\/\/colab\.research\.google\.com\/gist\/anonymous\//
+      /^https:\/\/colab\.research\.google\.com\/gist\/anonymous\//,
     );
     expect(colabUrl).toContain(gistId);
   });
