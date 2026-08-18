@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Groq from "groq-sdk";
+import Anthropic from "@anthropic-ai/sdk";
 import { SYSTEM_PROMPT, buildUserPrompt } from "@/lib/notebookPrompt";
 import { buildNotebook, titleToFilename } from "@/lib/buildNotebook";
 import { uploadGist } from "@/lib/uploadGist";
@@ -30,37 +30,37 @@ export async function POST(req: NextRequest) {
 
     if (!apiKey || apiKey.trim().length === 0) {
       return NextResponse.json(
-        { error: "Groq API key is required." },
-        { status: 400 }
+        { error: "Anthropic API key is required." },
+        { status: 400 },
       );
     }
 
     if (!paperText || paperText.trim().length === 0) {
       return NextResponse.json(
         { error: "Paper text is required." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const groq = new Groq({ apiKey: apiKey.trim() });
+    const anthropic = new Anthropic({ apiKey: apiKey.trim() });
 
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+    const message = await anthropic.messages.create({
+      model: "claude-haiku-4-5",
+      max_tokens: 16000,
+      temperature: 0.3,
+      system: SYSTEM_PROMPT,
       messages: [
-        {
-          role: "system",
-          content: SYSTEM_PROMPT,
-        },
         {
           role: "user",
           content: buildUserPrompt(paperText),
         },
       ],
-      temperature: 0.3,
-      max_tokens: 4096,
     });
 
-    const rawContent = completion.choices[0]?.message?.content ?? "";
+    const textBlock = message.content.find(
+      (block): block is Anthropic.TextBlock => block.type === "text",
+    );
+    const rawContent = textBlock?.text ?? "";
 
     // Parse the JSON array from the response
     let cells: NotebookCell[];
@@ -84,19 +84,22 @@ export async function POST(req: NextRequest) {
           typeof cell === "object" &&
           cell !== null &&
           (cell.type === "markdown" || cell.type === "code") &&
-          typeof cell.source === "string"
+          typeof cell.source === "string",
       );
 
       if (cells.length === 0) {
         throw new Error("No valid cells found in response");
       }
     } catch {
-      console.error("[generate] LLM parse failure, raw snippet:", rawContent.slice(0, 500));
+      console.error(
+        "[generate] LLM parse failure, raw snippet:",
+        rawContent.slice(0, 500),
+      );
       return NextResponse.json(
         {
           error: `Failed to parse notebook cells from AI response. The model may have returned an invalid format. Please try again.`,
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
@@ -104,14 +107,14 @@ export async function POST(req: NextRequest) {
     const dangerousMatch = scanForDangerousPatterns(cells);
     if (dangerousMatch) {
       console.error(
-        `[generate] Dangerous pattern "${dangerousMatch.pattern}" detected in cell ${dangerousMatch.cellIndex} — blocking response`
+        `[generate] Dangerous pattern "${dangerousMatch.pattern}" detected in cell ${dangerousMatch.cellIndex} — blocking response`,
       );
       return NextResponse.json(
         {
           error:
             "Generation blocked: the paper may contain adversarial content. Please try a different paper.",
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
@@ -130,9 +133,7 @@ export async function POST(req: NextRequest) {
     } catch (gistErr) {
       // Gist upload is non-critical — still return the notebook
       gistError =
-        gistErr instanceof Error
-          ? gistErr.message
-          : "Gist upload failed";
+        gistErr instanceof Error ? gistErr.message : "Gist upload failed";
     }
 
     return NextResponse.json({
@@ -144,22 +145,48 @@ export async function POST(req: NextRequest) {
       ...(gistError ? { gistError } : {}),
     });
   } catch (err: unknown) {
-    if (err instanceof Groq.APIError) {
-      const status = err.status ?? 500;
-      const message =
-        status === 401
-          ? "Invalid Groq API key. Please check your key and try again."
-          : status === 429 || status === 413
-          ? "Groq token limit exceeded. Your paper may still be too large — please try a shorter paper or wait a minute before retrying."
-          : `Groq API error: ${err.message}`;
+    if (err instanceof Anthropic.AuthenticationError) {
+      return NextResponse.json(
+        {
+          error:
+            "Invalid Anthropic API key. Please check your key and try again.",
+        },
+        { status: 401 },
+      );
+    }
 
-      return NextResponse.json({ error: message }, { status });
+    if (err instanceof Anthropic.RateLimitError) {
+      return NextResponse.json(
+        {
+          error:
+            "Anthropic rate limit exceeded. Please wait a minute before retrying.",
+        },
+        { status: 429 },
+      );
+    }
+
+    if (err instanceof Anthropic.BadRequestError) {
+      return NextResponse.json(
+        {
+          error:
+            "Anthropic rejected the request — the paper may be too long. Please try a shorter paper.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (err instanceof Anthropic.APIError) {
+      const status = err.status ?? 500;
+      return NextResponse.json(
+        { error: `Anthropic API error: ${err.message}` },
+        { status },
+      );
     }
 
     console.error("[generate] Unexpected error:", err);
     return NextResponse.json(
       { error: "Generation failed. Please try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

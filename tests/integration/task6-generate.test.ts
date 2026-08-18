@@ -35,7 +35,7 @@ describe("Task 6 – Notebook generation API route and prompt", () => {
     expect(SYSTEM_PROMPT).toContain("code");
   });
 
-  it("SYSTEM_PROMPT mentions Groq model or llama or synthetic data", () => {
+  it("SYSTEM_PROMPT mentions synthetic data", () => {
     expect(SYSTEM_PROMPT).toContain("synthetic data");
   });
 
@@ -56,31 +56,31 @@ describe("Task 6 – Notebook generation API route and prompt", () => {
   it("generate route exports a POST handler", () => {
     const content = readFileSync(
       resolve(root, "app/api/generate/route.ts"),
-      "utf8"
+      "utf8",
     );
     expect(content).toContain("export async function POST");
   });
 
-  it("generate route uses groq-sdk", () => {
+  it("generate route uses @anthropic-ai/sdk", () => {
     const content = readFileSync(
       resolve(root, "app/api/generate/route.ts"),
-      "utf8"
+      "utf8",
     );
-    expect(content).toContain("groq");
+    expect(content).toContain("@anthropic-ai/sdk");
   });
 
-  it("generate route uses llama-3.3-70b-versatile model", () => {
+  it("generate route uses claude-haiku-4-5 model", () => {
     const content = readFileSync(
       resolve(root, "app/api/generate/route.ts"),
-      "utf8"
+      "utf8",
     );
-    expect(content).toContain("llama-3.3-70b-versatile");
+    expect(content).toContain("claude-haiku-4-5");
   });
 
   it("generate route accepts paperText and apiKey", () => {
     const content = readFileSync(
       resolve(root, "app/api/generate/route.ts"),
-      "utf8"
+      "utf8",
     );
     expect(content).toContain("paperText");
     expect(content).toContain("apiKey");

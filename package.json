@@ -11,7 +11,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "groq-sdk": "^0.9.1",
+    "@anthropic-ai/sdk": "^0.117.1",
     "next": "15.5.14",
     "pdf-parse": "^1.1.1",
     "react": "^18",

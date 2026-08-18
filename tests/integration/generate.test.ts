@@ -1,23 +1,47 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mock groq-sdk before importing the route
+// Mock @anthropic-ai/sdk before importing the route
 const mockCreate = vi.fn();
-vi.mock("groq-sdk", () => {
+vi.mock("@anthropic-ai/sdk", () => {
   class APIError extends Error {
     status: number;
-    constructor(status: number, _body: unknown, message: string) {
+    constructor(status: number, message: string) {
       super(message);
       this.status = status;
       this.name = "APIError";
     }
   }
 
-  class Groq {
-    chat = { completions: { create: mockCreate } };
+  class AuthenticationError extends APIError {
+    constructor(message: string) {
+      super(401, message);
+      this.name = "AuthenticationError";
+    }
+  }
+
+  class RateLimitError extends APIError {
+    constructor(message: string) {
+      super(429, message);
+      this.name = "RateLimitError";
+    }
+  }
+
+  class BadRequestError extends APIError {
+    constructor(message: string) {
+      super(400, message);
+      this.name = "BadRequestError";
+    }
+  }
+
+  class Anthropic {
+    messages = { create: mockCreate };
     constructor() {}
     static APIError = APIError;
+    static AuthenticationError = AuthenticationError;
+    static RateLimitError = RateLimitError;
+    static BadRequestError = BadRequestError;
   }
-  return { default: Groq };
+  return { default: Anthropic };
 });
 
 // Mock uploadGist — use the path the route uses (resolved via @/ alias)
@@ -71,7 +95,7 @@ describe("/api/generate — integration", () => {
   });
 
   it("returns 400 when paperText is missing", async () => {
-    const req = buildRequest({ apiKey: "gsk_test123" });
+    const req = buildRequest({ apiKey: "sk-ant-test123" });
     const res = await POST(req);
     expect(res.status).toBe(400);
     const body = await res.json();
@@ -79,17 +103,20 @@ describe("/api/generate — integration", () => {
   });
 
   it("returns 400 when paperText is empty string", async () => {
-    const req = buildRequest({ apiKey: "gsk_test123", paperText: "   " });
+    const req = buildRequest({ apiKey: "sk-ant-test123", paperText: "   " });
     const res = await POST(req);
     expect(res.status).toBe(400);
   });
 
   it("returns 200 with notebook on successful generation", async () => {
     mockCreate.mockResolvedValueOnce({
-      choices: [{ message: { content: VALID_CELLS } }],
+      content: [{ type: "text", text: VALID_CELLS }],
     });
 
-    const req = buildRequest({ apiKey: "gsk_test123", paperText: "Paper about attention." });
+    const req = buildRequest({
+      apiKey: "sk-ant-test123",
+      paperText: "Paper about attention.",
+    });
     const res = await POST(req);
 
     expect(res.status).toBe(200);
@@ -103,10 +130,13 @@ describe("/api/generate — integration", () => {
 
   it("returns 422 when LLM returns unparseable content", async () => {
     mockCreate.mockResolvedValueOnce({
-      choices: [{ message: { content: "This is not valid JSON at all" } }],
+      content: [{ type: "text", text: "This is not valid JSON at all" }],
     });
 
-    const req = buildRequest({ apiKey: "gsk_test123", paperText: "Paper text" });
+    const req = buildRequest({
+      apiKey: "sk-ant-test123",
+      paperText: "Paper text",
+    });
     const res = await POST(req);
 
     expect(res.status).toBe(422);
@@ -122,10 +152,13 @@ describe("/api/generate — integration", () => {
       { type: "code", source: "import os\nos.system('rm -rf /')" },
     ]);
     mockCreate.mockResolvedValueOnce({
-      choices: [{ message: { content: dangerousCells } }],
+      content: [{ type: "text", text: dangerousCells }],
     });
 
-    const req = buildRequest({ apiKey: "gsk_test123", paperText: "Paper text" });
+    const req = buildRequest({
+      apiKey: "sk-ant-test123",
+      paperText: "Paper text",
+    });
     const res = await POST(req);
 
     expect(res.status).toBe(422);
@@ -135,11 +168,16 @@ describe("/api/generate — integration", () => {
 
   it("still returns notebook when gist upload fails", async () => {
     mockCreate.mockResolvedValueOnce({
-      choices: [{ message: { content: VALID_CELLS } }],
+      content: [{ type: "text", text: VALID_CELLS }],
     });
-    mockedUploadGist.mockRejectedValueOnce(new Error("GitHub API rate limited"));
+    mockedUploadGist.mockRejectedValueOnce(
+      new Error("GitHub API rate limited"),
+    );
 
-    const req = buildRequest({ apiKey: "gsk_test123", paperText: "Paper text" });
+    const req = buildRequest({
+      apiKey: "sk-ant-test123",
+      paperText: "Paper text",
+    });
     const res = await POST(req);
 
     expect(res.status).toBe(200);
@@ -151,10 +189,13 @@ describe("/api/generate — integration", () => {
 
   it("strips markdown code fences from LLM response", async () => {
     mockCreate.mockResolvedValueOnce({
-      choices: [{ message: { content: "```json\n" + VALID_CELLS + "\n```" } }],
+      content: [{ type: "text", text: "```json\n" + VALID_CELLS + "\n```" }],
     });
 
-    const req = buildRequest({ apiKey: "gsk_test123", paperText: "Paper text" });
+    const req = buildRequest({
+      apiKey: "sk-ant-test123",
+      paperText: "Paper text",
+    });
     const res = await POST(req);
 
     expect(res.status).toBe(200);
@@ -170,10 +211,13 @@ describe("/api/generate — integration", () => {
       { type: "code", source: "x = 1" },
     ]);
     mockCreate.mockResolvedValueOnce({
-      choices: [{ message: { content: mixedCells } }],
+      content: [{ type: "text", text: mixedCells }],
     });
 
-    const req = buildRequest({ apiKey: "gsk_test123", paperText: "Paper text" });
+    const req = buildRequest({
+      apiKey: "sk-ant-test123",
+      paperText: "Paper text",
+    });
     const res = await POST(req);
 
     expect(res.status).toBe(200);
@@ -187,19 +231,27 @@ describe("/api/generate — integration", () => {
       { nope: true },
     ]);
     mockCreate.mockResolvedValueOnce({
-      choices: [{ message: { content: badCells } }],
+      content: [{ type: "text", text: badCells }],
     });
 
-    const req = buildRequest({ apiKey: "gsk_test123", paperText: "Paper text" });
+    const req = buildRequest({
+      apiKey: "sk-ant-test123",
+      paperText: "Paper text",
+    });
     const res = await POST(req);
 
     expect(res.status).toBe(422);
   });
 
   it("returns generic 500 on unexpected errors", async () => {
-    mockCreate.mockRejectedValueOnce(new TypeError("Cannot read properties of undefined"));
+    mockCreate.mockRejectedValueOnce(
+      new TypeError("Cannot read properties of undefined"),
+    );
 
-    const req = buildRequest({ apiKey: "gsk_test123", paperText: "Paper text" });
+    const req = buildRequest({
+      apiKey: "sk-ant-test123",
+      paperText: "Paper text",
+    });
     const res = await POST(req);
 
     expect(res.status).toBe(500);
@@ -214,10 +266,13 @@ describe("/api/generate — integration", () => {
       { type: "markdown", source: "No heading here, just text." },
     ]);
     mockCreate.mockResolvedValueOnce({
-      choices: [{ message: { content: noTitleCells } }],
+      content: [{ type: "text", text: noTitleCells }],
     });
 
-    const req = buildRequest({ apiKey: "gsk_test123", paperText: "Paper text" });
+    const req = buildRequest({
+      apiKey: "sk-ant-test123",
+      paperText: "Paper text",
+    });
     const res = await POST(req);
 
     expect(res.status).toBe(200);

@@ -3,10 +3,10 @@ import path from "path";
 import fs from "fs";
 
 /**
- * Quality test — runs with a REAL Groq API key and research.pdf.
+ * Quality test — runs with a REAL Anthropic API key and research.pdf.
  *
  * Run manually:   npm run test:e2e -- --project=quality
- * Requires:       GROQ_API_KEY environment variable set
+ * Requires:       ANTHROPIC_API_KEY environment variable set
  *
  * NOT run in CI (excluded from the default "chromium" project).
  */
@@ -17,9 +17,12 @@ test.describe("Quality test — real notebook generation", () => {
   test("generate notebook from research.pdf and validate output", async ({
     page,
   }) => {
-    const apiKey = process.env.GROQ_API_KEY;
+    const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
-      test.skip(true, "GROQ_API_KEY env var not set — skipping quality test");
+      test.skip(
+        true,
+        "ANTHROPIC_API_KEY env var not set — skipping quality test",
+      );
       return;
     }
 
@@ -67,7 +70,7 @@ test.describe("Quality test — real notebook generation", () => {
 
     const downloadPath = path.resolve(
       __dirname,
-      "../../tests/screenshots/quality-notebook.ipynb"
+      "../../tests/screenshots/quality-notebook.ipynb",
     );
     await download.saveAs(downloadPath);
     await page.screenshot({
