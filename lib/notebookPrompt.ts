@@ -50,11 +50,11 @@ CRITICAL RULES:
 - Generate enough cells to make a thorough tutorial (typically 15–30 cells total)
 - The synthetic data and implementation must be realistic and specific to the paper's domain`;
 
-// Groq free tier: 12,000 TPM. Budget breakdown:
+// Claude Haiku 4.5: 200K context window. Budget breakdown:
 //   System prompt: ~750 tokens
 //   Paper text:   ~3,000 tokens  (12,000 chars ÷ 4 chars/token)
-//   Response:     ~4,000 tokens  (max_tokens in route)
-//   Total:        ~7,750 tokens  (safe margin under 12,000)
+//   Response:     ~16,000 tokens (max_tokens in route)
+//   Total:        ~19,750 tokens (comfortable margin under 200K)
 const MAX_PAPER_CHARS = 12_000;
 
 // Lines matching any of these patterns are stripped before the text is sent

@@ -22,7 +22,7 @@ const FEATURES = [
   { label: "7-section structure" },
   { label: "Realistic synthetic data" },
   { label: "Runs in Google Colab" },
-  { label: "Groq-powered" },
+  { label: "Claude-powered" },
 ];
 
 export default function Home() {
@@ -38,7 +38,7 @@ export default function Home() {
   const advanceStep = useCallback(
     (
       setter: React.Dispatch<React.SetStateAction<number>>,
-      maxSteps: number
+      maxSteps: number,
     ) => {
       const ids: ReturnType<typeof setTimeout>[] = [];
       for (let i = 1; i < maxSteps; i++) {
@@ -46,7 +46,7 @@ export default function Home() {
       }
       return () => ids.forEach(clearTimeout);
     },
-    []
+    [],
   );
 
   const handleGenerate = useCallback(async () => {
@@ -102,7 +102,7 @@ export default function Home() {
     } catch (err: unknown) {
       cleanup();
       setErrorMessage(
-        err instanceof Error ? err.message : "An unexpected error occurred"
+        err instanceof Error ? err.message : "An unexpected error occurred",
       );
       setAppState("error");
     }
@@ -115,7 +115,8 @@ export default function Home() {
     setErrorMessage("");
   }, []);
 
-  if (appState === "processing") return <ProcessingView currentStep={processingStep} />;
+  if (appState === "processing")
+    return <ProcessingView currentStep={processingStep} />;
   if (appState === "result" && resultData)
     return (
       <ResultView
@@ -125,7 +126,8 @@ export default function Home() {
         onReset={handleReset}
       />
     );
-  if (appState === "error") return <ErrorView message={errorMessage} onReset={handleReset} />;
+  if (appState === "error")
+    return <ErrorView message={errorMessage} onReset={handleReset} />;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -158,10 +160,7 @@ export default function Home() {
             className="text-5xl sm:text-6xl font-semibold leading-[1.08] tracking-tight text-highlight mb-6"
           >
             Turn any paper into a{" "}
-            <span
-              className="font-mono"
-              style={{ color: "var(--primary)" }}
-            >
+            <span className="font-mono" style={{ color: "var(--primary)" }}>
               Colab
             </span>{" "}
             notebook.
@@ -173,8 +172,8 @@ export default function Home() {
             className="text-muted text-base leading-relaxed max-w-lg mx-auto mb-10"
           >
             Upload a research PDF. Get a fully-implemented, tutorial-grade
-            Google Colab notebook — with synthetic data, visualizations, and
-            a step-by-step narrative. Built for researchers who move fast.
+            Google Colab notebook — with synthetic data, visualizations, and a
+            step-by-step narrative. Built for researchers who move fast.
           </p>
 
           {/* Feature pills */}
@@ -206,7 +205,9 @@ export default function Home() {
             {/* Step 01 */}
             <div className="flex gap-4">
               <div className="flex-none pt-px">
-                <span className="font-mono text-xs text-muted select-none">01</span>
+                <span className="font-mono text-xs text-muted select-none">
+                  01
+                </span>
               </div>
               <div className="flex-1">
                 <ApiKeyInput value={apiKey} onChange={setApiKey} />
@@ -224,7 +225,9 @@ export default function Home() {
             {/* Step 02 */}
             <div className="flex gap-4">
               <div className="flex-none pt-px">
-                <span className="font-mono text-xs text-muted select-none">02</span>
+                <span className="font-mono text-xs text-muted select-none">
+                  02
+                </span>
               </div>
               <div className="flex-1">
                 <PdfDropzone file={pdfFile} onFileChange={setPdfFile} />
@@ -242,10 +245,15 @@ export default function Home() {
             {/* Step 03 — Generate */}
             <div className="flex gap-4">
               <div className="flex-none pt-px">
-                <span className="font-mono text-xs text-muted select-none">03</span>
+                <span className="font-mono text-xs text-muted select-none">
+                  03
+                </span>
               </div>
               <div className="flex-1">
-                <GenerateButton disabled={!canGenerate} onClick={handleGenerate} />
+                <GenerateButton
+                  disabled={!canGenerate}
+                  onClick={handleGenerate}
+                />
               </div>
             </div>
           </div>

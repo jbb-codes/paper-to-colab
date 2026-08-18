@@ -15,9 +15,9 @@ describe("Task 1 – Project setup verification", () => {
     expect(pkg.dependencies["next"]).toMatch(/^15./);
   });
 
-  it("package.json lists groq-sdk as a dependency", () => {
+  it("package.json lists @anthropic-ai/sdk as a dependency", () => {
     const pkg = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
-    expect(pkg.dependencies["groq-sdk"]).toBeDefined();
+    expect(pkg.dependencies["@anthropic-ai/sdk"]).toBeDefined();
   });
 
   it("package.json lists pdf-parse as a dependency", () => {
@@ -45,8 +45,10 @@ describe("Task 1 – Project setup verification", () => {
     expect(css).toContain("@tailwind utilities");
   });
 
-  it("groq-sdk is installed in node_modules", () => {
-    expect(existsSync(resolve(root, "node_modules/groq-sdk"))).toBe(true);
+  it("@anthropic-ai/sdk is installed in node_modules", () => {
+    expect(existsSync(resolve(root, "node_modules/@anthropic-ai/sdk"))).toBe(
+      true,
+    );
   });
 
   it("pdf-parse is installed in node_modules", () => {

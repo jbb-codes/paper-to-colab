@@ -16,7 +16,7 @@ export default function ApiKeyInput({ value, onChange }: ApiKeyInputProps) {
         htmlFor="api-key-input"
         className="block text-sm font-mono text-muted mb-2 uppercase tracking-widest"
       >
-        Groq API Key
+        Anthropic API Key
       </label>
       <div className="relative">
         <input
@@ -25,13 +25,15 @@ export default function ApiKeyInput({ value, onChange }: ApiKeyInputProps) {
           type={showKey ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="gsk_..."
+          placeholder="sk-ant-..."
           autoComplete="off"
           spellCheck={false}
           className="w-full bg-surface border border-border rounded px-4 py-3 font-mono text-sm text-highlight placeholder-muted focus:outline-none transition-colors pr-12"
-        style={{ outline: "none" }}
-        onFocus={(e) => (e.currentTarget.style.borderColor = "var(--primary)")}
-        onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
+          style={{ outline: "none" }}
+          onFocus={(e) =>
+            (e.currentTarget.style.borderColor = "var(--primary)")
+          }
+          onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
         />
         <button
           type="button"
