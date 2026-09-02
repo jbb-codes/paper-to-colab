@@ -52,12 +52,12 @@ describe("L2 — Generic error messages to client", () => {
   });
   it("generate route returns 'Generation failed. Please try again.' to client", () => {
     expect(
-      readFileSync(resolve(root, "app/api/generate/route.ts"), "utf8"),
+      readFileSync(resolve(root, "lib/mapAnthropicError.ts"), "utf8"),
     ).toContain("Generation failed. Please try again.");
   });
   it("generate route does not interpolate err.message into generic catch response", () => {
     expect(
-      readFileSync(resolve(root, "app/api/generate/route.ts"), "utf8"),
+      readFileSync(resolve(root, "lib/mapAnthropicError.ts"), "utf8"),
     ).not.toContain("Generation failed: ${message}");
   });
 });
