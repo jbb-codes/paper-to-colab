@@ -9,6 +9,12 @@ import {
   type NotebookCell,
 } from "@/lib/parseNotebookResponse";
 
+/**
+ * Extracts the notebook title from the first level-one heading in a markdown cell.
+ *
+ * @param cells - The notebook cells to search
+ * @returns The extracted title, or `"research-paper-notebook"` when no level-one heading is found
+ */
 function extractTitle(cells: NotebookCell[]): string {
   // Try to pull title from the first markdown cell's first H1
   const firstMarkdown = cells.find((c) => c.type === "markdown");
@@ -19,6 +25,12 @@ function extractTitle(cells: NotebookCell[]): string {
   return "research-paper-notebook";
 }
 
+/**
+ * Generates a notebook from submitted paper text and returns the resulting notebook data.
+ *
+ * @param req - The request containing `paperText` and `apiKey` in its JSON body.
+ * @returns A response containing the generated notebook, title, filename, and Colab URL, or an error response.
+ */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
