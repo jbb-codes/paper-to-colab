@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { SYSTEM_PROMPT, buildUserPrompt } from "@/lib/notebookPrompt";
-import { buildNotebook, titleToFilename } from "@/lib/buildNotebook";
+import {
+  buildNotebook,
+  extractTitle,
+  titleToFilename,
+} from "@/lib/buildNotebook";
 import { uploadGist } from "@/lib/uploadGist";
 import { scanForDangerousPatterns } from "@/lib/validateCells";
 import {
@@ -9,22 +13,6 @@ import {
   type NotebookCell,
 } from "@/lib/parseNotebookResponse";
 import { mapAnthropicError } from "@/lib/mapAnthropicError";
-
-/**
- * Extracts the notebook title from the first level-one heading in a markdown cell.
- *
- * @param cells - The notebook cells to search
- * @returns The extracted title, or `"research-paper-notebook"` when no level-one heading is found
- */
-function extractTitle(cells: NotebookCell[]): string {
-  // Try to pull title from the first markdown cell's first H1
-  const firstMarkdown = cells.find((c) => c.type === "markdown");
-  if (firstMarkdown) {
-    const match = firstMarkdown.source.match(/^#\s+(.+)/m);
-    if (match) return match[1].trim();
-  }
-  return "research-paper-notebook";
-}
 
 /**
  * Generates a notebook from submitted paper text and returns the resulting notebook data.
