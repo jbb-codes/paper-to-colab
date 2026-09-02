@@ -8,6 +8,7 @@ import {
   parseNotebookResponse,
   type NotebookCell,
 } from "@/lib/parseNotebookResponse";
+import { mapAnthropicError } from "@/lib/mapAnthropicError";
 
 /**
  * Extracts the notebook title from the first level-one heading in a markdown cell.
@@ -132,48 +133,10 @@ export async function POST(req: NextRequest) {
       ...(gistError ? { gistError } : {}),
     });
   } catch (err: unknown) {
-    if (err instanceof Anthropic.AuthenticationError) {
-      return NextResponse.json(
-        {
-          error:
-            "Invalid Anthropic API key. Please check your key and try again.",
-        },
-        { status: 401 },
-      );
+    if (!(err instanceof Anthropic.APIError)) {
+      console.error("[generate] Unexpected error:", err);
     }
-
-    if (err instanceof Anthropic.RateLimitError) {
-      return NextResponse.json(
-        {
-          error:
-            "Anthropic rate limit exceeded. Please wait a minute before retrying.",
-        },
-        { status: 429 },
-      );
-    }
-
-    if (err instanceof Anthropic.BadRequestError) {
-      return NextResponse.json(
-        {
-          error:
-            "Anthropic rejected the request — the paper may be too long. Please try a shorter paper.",
-        },
-        { status: 400 },
-      );
-    }
-
-    if (err instanceof Anthropic.APIError) {
-      const status = err.status ?? 500;
-      return NextResponse.json(
-        { error: `Anthropic API error: ${err.message}` },
-        { status },
-      );
-    }
-
-    console.error("[generate] Unexpected error:", err);
-    return NextResponse.json(
-      { error: "Generation failed. Please try again." },
-      { status: 500 },
-    );
+    const { status, error } = mapAnthropicError(err);
+    return NextResponse.json({ error }, { status });
   }
 }
