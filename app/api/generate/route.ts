@@ -4,12 +4,17 @@ import { SYSTEM_PROMPT, buildUserPrompt } from "@/lib/notebookPrompt";
 import { buildNotebook, titleToFilename } from "@/lib/buildNotebook";
 import { uploadGist } from "@/lib/uploadGist";
 import { scanForDangerousPatterns } from "@/lib/validateCells";
+import {
+  parseNotebookResponse,
+  type NotebookCell,
+} from "@/lib/parseNotebookResponse";
 
-export interface NotebookCell {
-  type: "markdown" | "code";
-  source: string;
-}
-
+/**
+ * Extracts the notebook title from the first level-one heading in a markdown cell.
+ *
+ * @param cells - The notebook cells to search
+ * @returns The extracted title, or `"research-paper-notebook"` when no level-one heading is found
+ */
 function extractTitle(cells: NotebookCell[]): string {
   // Try to pull title from the first markdown cell's first H1
   const firstMarkdown = cells.find((c) => c.type === "markdown");
@@ -20,6 +25,12 @@ function extractTitle(cells: NotebookCell[]): string {
   return "research-paper-notebook";
 }
 
+/**
+ * Generates a notebook from submitted paper text and returns the resulting notebook data.
+ *
+ * @param req - The request containing `paperText` and `apiKey` in its JSON body.
+ * @returns A response containing the generated notebook, title, filename, and Colab URL, or an error response.
+ */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -65,31 +76,7 @@ export async function POST(req: NextRequest) {
     // Parse the JSON array from the response
     let cells: NotebookCell[];
     try {
-      // Strip any markdown code fences if the model added them
-      const cleaned = rawContent
-        .trim()
-        .replace(/^```(?:json)?\s*/i, "")
-        .replace(/\s*```$/i, "")
-        .trim();
-
-      cells = JSON.parse(cleaned);
-
-      if (!Array.isArray(cells)) {
-        throw new Error("Response is not an array");
-      }
-
-      // Validate each cell
-      cells = cells.filter(
-        (cell): cell is NotebookCell =>
-          typeof cell === "object" &&
-          cell !== null &&
-          (cell.type === "markdown" || cell.type === "code") &&
-          typeof cell.source === "string",
-      );
-
-      if (cells.length === 0) {
-        throw new Error("No valid cells found in response");
-      }
+      cells = parseNotebookResponse(rawContent);
     } catch {
       console.error(
         "[generate] LLM parse failure, raw snippet:",
