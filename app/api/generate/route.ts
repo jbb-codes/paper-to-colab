@@ -4,11 +4,10 @@ import { SYSTEM_PROMPT, buildUserPrompt } from "@/lib/notebookPrompt";
 import { buildNotebook, titleToFilename } from "@/lib/buildNotebook";
 import { uploadGist } from "@/lib/uploadGist";
 import { scanForDangerousPatterns } from "@/lib/validateCells";
-
-export interface NotebookCell {
-  type: "markdown" | "code";
-  source: string;
-}
+import {
+  parseNotebookResponse,
+  type NotebookCell,
+} from "@/lib/parseNotebookResponse";
 
 function extractTitle(cells: NotebookCell[]): string {
   // Try to pull title from the first markdown cell's first H1
@@ -65,31 +64,7 @@ export async function POST(req: NextRequest) {
     // Parse the JSON array from the response
     let cells: NotebookCell[];
     try {
-      // Strip any markdown code fences if the model added them
-      const cleaned = rawContent
-        .trim()
-        .replace(/^```(?:json)?\s*/i, "")
-        .replace(/\s*```$/i, "")
-        .trim();
-
-      cells = JSON.parse(cleaned);
-
-      if (!Array.isArray(cells)) {
-        throw new Error("Response is not an array");
-      }
-
-      // Validate each cell
-      cells = cells.filter(
-        (cell): cell is NotebookCell =>
-          typeof cell === "object" &&
-          cell !== null &&
-          (cell.type === "markdown" || cell.type === "code") &&
-          typeof cell.source === "string",
-      );
-
-      if (cells.length === 0) {
-        throw new Error("No valid cells found in response");
-      }
+      cells = parseNotebookResponse(rawContent);
     } catch {
       console.error(
         "[generate] LLM parse failure, raw snippet:",
