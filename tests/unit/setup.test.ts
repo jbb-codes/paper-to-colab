@@ -10,9 +10,9 @@ describe("Task 1 – Project setup verification", () => {
     expect(pkg.name).toBe("paper-to-colab");
   });
 
-  it("package.json lists next@15 as a dependency", () => {
+  it("package.json lists next@16 as a dependency", () => {
     const pkg = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
-    expect(pkg.dependencies["next"]).toMatch(/^15./);
+    expect(pkg.dependencies["next"]).toMatch(/^\^16\./);
   });
 
   it("package.json lists @anthropic-ai/sdk as a dependency", () => {

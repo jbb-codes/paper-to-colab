@@ -26,8 +26,12 @@ function buildRequest(file: File | null): NextRequest {
   });
 }
 
-function pdfFile(content: Uint8Array, name = "paper.pdf", type = "application/pdf") {
-  return new File([content], name, { type });
+function pdfFile(
+  content: Uint8Array,
+  name = "paper.pdf",
+  type = "application/pdf",
+) {
+  return new File([content as BlobPart], name, { type });
 }
 
 describe("/api/extract — integration", () => {
@@ -94,7 +98,7 @@ describe("/api/extract — integration", () => {
       numrender: 5,
       info: {},
       metadata: null,
-      version: "1.0",
+      version: "default",
     });
 
     const fakePdf = pdfFile(new Uint8Array([0x25, 0x50, 0x44, 0x46])); // %PDF
@@ -108,7 +112,9 @@ describe("/api/extract — integration", () => {
   });
 
   it("returns 500 with generic error when pdf-parse throws", async () => {
-    mockedPdfParse.mockRejectedValueOnce(new Error("Corrupted PDF structure at byte 0x4F"));
+    mockedPdfParse.mockRejectedValueOnce(
+      new Error("Corrupted PDF structure at byte 0x4F"),
+    );
 
     const fakePdf = pdfFile(new Uint8Array([0x25, 0x50, 0x44, 0x46]));
     const req = buildRequest(fakePdf);
@@ -128,7 +134,7 @@ describe("/api/extract — integration", () => {
       numrender: 1,
       info: {},
       metadata: null,
-      version: "1.0",
+      version: "default",
     });
 
     const file = new File([new Uint8Array([0x25, 0x50])], "paper.pdf", {

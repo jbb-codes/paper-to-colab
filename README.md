@@ -19,7 +19,7 @@ A Next.js web application that converts academic PDF papers into runnable Jupyte
 
 | Layer            | Technology                            |
 | ---------------- | ------------------------------------- |
-| Framework        | Next.js 15 (App Router)               |
+| Framework        | Next.js 16 (App Router)               |
 | Language         | TypeScript                            |
 | Styling          | Tailwind CSS                          |
 | LLM              | Anthropic Claude (`claude-haiku-4-5`) |
