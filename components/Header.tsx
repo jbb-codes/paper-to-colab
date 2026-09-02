@@ -24,10 +24,42 @@ function LogoMark() {
       aria-hidden="true"
     >
       {/* Document */}
-      <rect x="1" y="1" width="12" height="16" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-      <line x1="4" y1="6" x2="10" y2="6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-      <line x1="4" y1="9" x2="10" y2="9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-      <line x1="4" y1="12" x2="8" y2="12" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <rect
+        x="1"
+        y="1"
+        width="12"
+        height="16"
+        rx="1.5"
+        stroke="currentColor"
+        strokeWidth="1.4"
+      />
+      <line
+        x1="4"
+        y1="6"
+        x2="10"
+        y2="6"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+      <line
+        x1="4"
+        y1="9"
+        x2="10"
+        y2="9"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+      <line
+        x1="4"
+        y1="12"
+        x2="8"
+        y2="12"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
       {/* Arrow */}
       <path
         d="M14.5 9L18 11L14.5 13"
@@ -36,7 +68,15 @@ function LogoMark() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <line x1="15" y1="11" x2="21" y2="11" stroke="var(--primary)" strokeWidth="1.5" strokeLinecap="round" />
+      <line
+        x1="15"
+        y1="11"
+        x2="21"
+        y2="11"
+        stroke="var(--primary)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -44,7 +84,17 @@ function LogoMark() {
 function ThemeToggleIcon({ theme }: { theme: Theme }) {
   if (theme === "dark") {
     return (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
         <circle cx="12" cy="12" r="4" />
         <line x1="12" y1="2" x2="12" y2="6" />
         <line x1="12" y1="18" x2="12" y2="22" />
@@ -58,7 +108,17 @@ function ThemeToggleIcon({ theme }: { theme: Theme }) {
     );
   }
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
   );
@@ -67,8 +127,13 @@ function ThemeToggleIcon({ theme }: { theme: Theme }) {
 export default function Header() {
   const [theme, setTheme] = useState<Theme>("dark");
 
+  // Reading localStorage/matchMedia during the lazy useState initializer
+  // would make the client's first render diverge from the server's "dark"
+  // default and trigger a hydration mismatch — deferring to an effect
+  // applies the real theme only after hydration completes.
   useEffect(() => {
     const initial = getInitialTheme();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(initial);
     document.documentElement.setAttribute("data-theme", initial);
   }, []);
@@ -92,8 +157,10 @@ export default function Header() {
 
       {/* Right side */}
       <div className="flex items-center gap-3">
-        <span className="hidden sm:block font-mono text-xs tracking-widest uppercase px-2 py-1 rounded border border-border"
-          style={{ color: "var(--accent)", borderColor: "var(--border)" }}>
+        <span
+          className="hidden sm:block font-mono text-xs tracking-widest uppercase px-2 py-1 rounded border border-border"
+          style={{ color: "var(--accent)", borderColor: "var(--border)" }}
+        >
           v1.0
         </span>
         <button

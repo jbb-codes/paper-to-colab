@@ -7,23 +7,31 @@ interface ProcessingViewProps {
   currentStep?: number;
 }
 
-export default function ProcessingView({ currentStep = 0 }: ProcessingViewProps) {
+export default function ProcessingView({
+  currentStep = 0,
+}: ProcessingViewProps) {
+  const [prevStep, setPrevStep] = useState(currentStep);
   const [visibleIndex, setVisibleIndex] = useState(currentStep);
   const [fade, setFade] = useState(true);
 
+  if (currentStep !== prevStep) {
+    setPrevStep(currentStep);
+    setFade(false);
+  }
+
   useEffect(() => {
-    if (currentStep !== visibleIndex) {
-      // Fade out, then switch message, then fade in
-      setFade(false);
+    if (!fade) {
       const timer = setTimeout(() => {
         setVisibleIndex(currentStep);
         setFade(true);
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, [currentStep, visibleIndex]);
+  }, [fade, currentStep]);
 
-  const progress = Math.round(((visibleIndex + 1) / STATUS_MESSAGES.length) * 100);
+  const progress = Math.round(
+    ((visibleIndex + 1) / STATUS_MESSAGES.length) * 100,
+  );
 
   return (
     <div
@@ -32,7 +40,10 @@ export default function ProcessingView({ currentStep = 0 }: ProcessingViewProps)
     >
       <div className="w-full max-w-xl text-center">
         {/* Spinner */}
-        <div className="flex justify-center mb-10" data-testid="processing-spinner">
+        <div
+          className="flex justify-center mb-10"
+          data-testid="processing-spinner"
+        >
           <div className="relative w-12 h-12">
             <div className="absolute inset-0 rounded-full border-2 border-border" />
             <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-accent animate-spin" />
