@@ -1,11 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { buildNotebook, titleToFilename } from "../../lib/buildNotebook";
+import {
+  buildNotebook,
+  extractTitle,
+  titleToFilename,
+} from "../../lib/buildNotebook";
 
 describe("buildNotebook — source splitting edge cases", () => {
   it("splits multi-line source so each line except last ends with \\n", () => {
-    const nb = buildNotebook([
-      { type: "code", source: "line1\nline2\nline3" },
-    ]);
+    const nb = buildNotebook([{ type: "code", source: "line1\nline2\nline3" }]);
     expect(nb.cells[0].source).toEqual(["line1\n", "line2\n", "line3"]);
   });
 
@@ -55,6 +57,39 @@ describe("buildNotebook — notebook structure", () => {
     expect(nb.cells[0].source.join("")).toBe("first");
     expect(nb.cells[1].source.join("")).toBe("second");
     expect(nb.cells[2].source.join("")).toBe("third");
+  });
+});
+
+describe("extractTitle", () => {
+  it("extracts the title from the first H1 in a markdown cell", () => {
+    const title = extractTitle([
+      { type: "markdown", source: "# My Paper Title\n\nSome intro." },
+      { type: "code", source: "print('hello')" },
+    ]);
+    expect(title).toBe("My Paper Title");
+  });
+
+  it("trims whitespace around the extracted title", () => {
+    const title = extractTitle([
+      { type: "markdown", source: "#   Padded Title   " },
+    ]);
+    expect(title).toBe("Padded Title");
+  });
+
+  it("falls back to the default title when no markdown cell exists", () => {
+    const title = extractTitle([{ type: "code", source: "x = 1" }]);
+    expect(title).toBe("research-paper-notebook");
+  });
+
+  it("falls back to the default title when markdown cell has no H1", () => {
+    const title = extractTitle([
+      { type: "markdown", source: "## Not an H1\n\nBody text." },
+    ]);
+    expect(title).toBe("research-paper-notebook");
+  });
+
+  it("falls back to the default title for an empty cells array", () => {
+    expect(extractTitle([])).toBe("research-paper-notebook");
   });
 });
 

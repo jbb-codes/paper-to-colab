@@ -1,7 +1,6 @@
-export interface InputCell {
-  type: "markdown" | "code";
-  source: string;
-}
+import type { NotebookCell as ParsedCell } from "./parseNotebookResponse";
+
+export type InputCell = ParsedCell;
 
 export interface NotebookMarkdownCell {
   cell_type: "markdown";
@@ -51,7 +50,10 @@ function splitSource(source: string): string[] {
 /**
  * Converts an array of AI-generated cells into a valid nbformat 4.4 notebook.
  */
-export function buildNotebook(cells: InputCell[], paperTitle?: string): Notebook {
+export function buildNotebook(
+  cells: InputCell[],
+  paperTitle?: string,
+): Notebook {
   const notebookCells: NotebookCell[] = cells.map((cell) => {
     if (cell.type === "markdown") {
       return {
@@ -87,6 +89,21 @@ export function buildNotebook(cells: InputCell[], paperTitle?: string): Notebook
     cells: notebookCells,
     _paperTitle: paperTitle,
   };
+}
+
+/**
+ * Extracts the notebook title from the first level-one heading in a markdown cell.
+ *
+ * @param cells - The notebook cells to search
+ * @returns The extracted title, or `"research-paper-notebook"` when no level-one heading is found
+ */
+export function extractTitle(cells: InputCell[]): string {
+  const firstMarkdown = cells.find((c) => c.type === "markdown");
+  if (firstMarkdown) {
+    const match = firstMarkdown.source.match(/^#\s+(.+)/m);
+    if (match) return match[1].trim();
+  }
+  return "research-paper-notebook";
 }
 
 /**
