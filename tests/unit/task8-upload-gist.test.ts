@@ -58,9 +58,9 @@ describe("Task 8 — Anonymous GitHub Gist upload", () => {
         id: "abcdef789012",
         html_url: "https://gist.github.com/abcdef789012",
       }),
-    }) as unknown as typeof fetch;
+    });
 
-    global.fetch = mockFetch;
+    global.fetch = mockFetch as unknown as typeof fetch;
 
     const { uploadGist } = await import("../../lib/uploadGist");
     await uploadGist('{"nbformat": 4}', "my-notebook.ipynb");
@@ -80,9 +80,9 @@ describe("Task 8 — Anonymous GitHub Gist upload", () => {
         id: "abcdef789012",
         html_url: "https://gist.github.com/abcdef789012",
       }),
-    }) as unknown as typeof fetch;
+    });
 
-    global.fetch = mockFetch;
+    global.fetch = mockFetch as unknown as typeof fetch;
     const { uploadGist } = await import("../../lib/uploadGist");
     await uploadGist('{"nbformat": 4}', "my-notebook.ipynb");
 

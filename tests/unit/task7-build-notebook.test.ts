@@ -54,19 +54,31 @@ describe("Task 7 — .ipynb file builder", () => {
 
   it("code cells include execution_count as null", () => {
     const nb = buildNotebook(sampleCells);
-    expect(nb.cells[1].execution_count).toBeNull();
-    expect(nb.cells[3].execution_count).toBeNull();
+    const cell1 = nb.cells[1];
+    const cell3 = nb.cells[3];
+    expect(cell1.cell_type).toBe("code");
+    expect(cell3.cell_type).toBe("code");
+    if (cell1.cell_type === "code") expect(cell1.execution_count).toBeNull();
+    if (cell3.cell_type === "code") expect(cell3.execution_count).toBeNull();
   });
 
   it("code cells include empty outputs array", () => {
     const nb = buildNotebook(sampleCells);
-    expect(Array.isArray(nb.cells[1].outputs)).toBe(true);
-    expect(nb.cells[1].outputs).toHaveLength(0);
+    const cell1 = nb.cells[1];
+    expect(cell1.cell_type).toBe("code");
+    if (cell1.cell_type === "code") {
+      expect(Array.isArray(cell1.outputs)).toBe(true);
+      expect(cell1.outputs).toHaveLength(0);
+    }
   });
 
   it("markdown cells do not have execution_count", () => {
     const nb = buildNotebook(sampleCells);
-    expect(nb.cells[0].execution_count).toBeUndefined();
+    const cell0 = nb.cells[0];
+    expect(cell0.cell_type).toBe("markdown");
+    expect(
+      (cell0 as { execution_count?: unknown }).execution_count,
+    ).toBeUndefined();
   });
 
   it("handles empty cells array", () => {
